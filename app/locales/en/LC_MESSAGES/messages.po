@@ -1,0 +1,366 @@
+# English translations for Tendereo Sustainability Institute
+# Copyright (C) 2026 Tendereo Sustainability Institute
+# This file is distributed under the same license as the Tendereo project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendereo 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-01 00:00+0000\n"
+"PO-Revision-Date: 2026-01-01 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel\n"
+
+# Navigation
+msgid "Publications"
+msgstr "Publications"
+
+msgid "Events"
+msgstr "Events"
+
+msgid "Team"
+msgstr "Team"
+
+msgid "Network"
+msgstr "Network"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Register"
+msgstr "Register"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+# Home
+msgid "Tendereo Sustainability Institute"
+msgstr "Tendereo Sustainability Institute"
+
+msgid "Inform, Influence, Impact — For a sustainable future in Africa"
+msgstr "Inform, Influence, Impact — For a sustainable future in Africa"
+
+msgid "Our publications"
+msgstr "Our publications"
+
+msgid "Contact us"
+msgstr "Contact us"
+
+msgid "Stay informed about our work"
+msgstr "Stay informed about our work"
+
+msgid "Subscribe"
+msgstr "Subscribe"
+
+msgid "Featured"
+msgstr "Featured"
+
+msgid "Latest publications"
+msgstr "Latest publications"
+
+msgid "See all publications"
+msgstr "See all publications"
+
+msgid "Upcoming event"
+msgstr "Upcoming event"
+
+msgid "Don't miss our next event"
+msgstr "Don't miss our next event"
+
+msgid "News feed"
+msgstr "News feed"
+
+msgid "About"
+msgstr "About"
+
+msgid "Mission"
+msgstr "Mission"
+
+msgid "Vision"
+msgstr "Vision"
+
+msgid "Values"
+msgstr "Values"
+
+msgid "Independence"
+msgstr "Independence"
+
+msgid "Our Directors"
+msgstr "Our Directors"
+
+msgid "Support our mission"
+msgstr "Support our mission"
+
+msgid "Donate"
+msgstr "Donate"
+
+# Auth
+msgid "Login"
+msgstr "Login"
+
+msgid "Create an account"
+msgstr "Create an account"
+
+msgid "Join the Tendereo community"
+msgstr "Join the Tendereo community"
+
+msgid "Full name"
+msgstr "Full name"
+
+msgid "Email address"
+msgstr "Email address"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Confirm password"
+msgstr "Confirm password"
+
+msgid "Forgot password?"
+msgstr "Forgot password?"
+
+msgid "Don't have an account?"
+msgstr "Don't have an account?"
+
+msgid "Already have an account?"
+msgstr "Already have an account?"
+
+msgid "Email verification"
+msgstr "Email verification"
+
+msgid "Verification code (6 digits)"
+msgstr "Verification code (6 digits)"
+
+msgid "Verify"
+msgstr "Verify"
+
+msgid "Code not received?"
+msgstr "Code not received?"
+
+msgid "Resend"
+msgstr "Resend"
+
+msgid "New password"
+msgstr "New password"
+
+msgid "Reset password"
+msgstr "Reset password"
+
+msgid "Admin registration"
+msgstr "Admin registration"
+
+msgid "Admin-only link"
+msgstr "Admin-only link"
+
+msgid "Create admin account"
+msgstr "Create admin account"
+
+msgid "Back to login"
+msgstr "Back to login"
+
+msgid "Admin access"
+msgstr "Admin access"
+
+msgid "Enter admin code to continue"
+msgstr "Enter admin code to continue"
+
+msgid "Access dashboard"
+msgstr "Access dashboard"
+
+msgid "Back to home"
+msgstr "Back to home"
+
+# Contact
+msgid "We are listening"
+msgstr "We are listening"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Phone"
+msgstr "Phone"
+
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+msgid "Follow us"
+msgstr "Follow us"
+
+msgid "Send us a message"
+msgstr "Send us a message"
+
+msgid "Subject"
+msgstr "Subject"
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Send message"
+msgstr "Send message"
+
+msgid "Our headquarters"
+msgstr "Our headquarters"
+
+# Publications
+msgid "Reports"
+msgstr "Reports"
+
+msgid "Policy Briefs"
+msgstr "Policy Briefs"
+
+msgid "Analysis Notes"
+msgstr "Analysis Notes"
+
+msgid "Op-Eds"
+msgstr "Op-Eds"
+
+msgid "Economy"
+msgstr "Economy"
+
+msgid "Public Policy"
+msgstr "Public Policy"
+
+msgid "Finance"
+msgstr "Finance"
+
+msgid "Digital"
+msgstr "Digital"
+
+msgid "Business"
+msgstr "Business"
+
+msgid "Read"
+msgstr "Read"
+
+# Events
+msgid "Upcoming"
+msgstr "Upcoming"
+
+msgid "Past"
+msgstr "Past"
+
+msgid "Learn more"
+msgstr "Learn more"
+
+# Team
+msgid "Create team"
+msgstr "Create team"
+
+msgid "Team name"
+msgstr "Team name"
+
+msgid "Theme"
+msgstr "Theme"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Number of members"
+msgstr "Number of members"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Back"
+msgstr "Back"
+
+msgid "Submit"
+msgstr "Submit"
+
+msgid "I accept the charter"
+msgstr "I accept the charter"
+
+# Join
+msgid "Join us"
+msgstr "Join us"
+
+msgid "Type of application"
+msgstr "Type of application"
+
+msgid "Researcher"
+msgstr "Researcher"
+
+msgid "Professional"
+msgstr "Professional"
+
+msgid "Student"
+msgstr "Student"
+
+msgid "Volunteer"
+msgstr "Volunteer"
+
+msgid "Partner"
+msgstr "Partner"
+
+msgid "Motivation"
+msgstr "Motivation"
+
+msgid "Organization"
+msgstr "Organization"
+
+msgid "Phone"
+msgstr "Phone"
+
+msgid "Send application"
+msgstr "Send application"
+
+# Videos
+msgid "Like"
+msgstr "Like"
+
+msgid "Comment"
+msgstr "Comment"
+
+msgid "Reply"
+msgstr "Reply"
+
+# Common
+msgid "Save"
+msgstr "Save"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Loading..."
+msgstr "Loading..."
+
+msgid "No results found"
+msgstr "No results found"
+
+msgid "Dark mode"
+msgstr "Dark mode"
+
+msgid "Light mode"
+msgstr "Light mode"
+
+msgid "All rights reserved"
+msgstr "All rights reserved"
+
+msgid "Legal notices"
+msgstr "Legal notices"
+
+msgid "Privacy policy"
+msgstr "Privacy policy"
+
+msgid "Site map"
+msgstr "Site map"

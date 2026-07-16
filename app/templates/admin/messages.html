@@ -1,0 +1,43 @@
+{% extends "admin/dashboard.html" %}
+{% block title %}Messages - Admin Tendereo{% endblock %}
+{% block content %}
+<div class="admin-layout">
+    {% include "admin/_sidebar.html" %}
+    <main class="admin-main">
+        <div class="admin-header">
+            <h1><i class="fas fa-envelope"></i> Messages de contact</h1>
+        </div>
+        <div class="admin-card">
+            {% for msg in messages %}
+            <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); {% if not msg.is_read %}background: rgba(14,124,134,0.03);{% endif %}">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <strong>{{ msg.name }}</strong> <span style="color: var(--text-muted); font-size: 0.85rem;">&lt;{{ msg.email }}&gt;</span>
+                        {% if not msg.is_read %}
+                        <span class="badge" style="background: #ef4444; color: #fff; font-size: 0.65rem;">Nouveau</span>
+                        {% endif %}
+                        <h4 style="margin: 0.25rem 0; font-size: 0.95rem;">{{ msg.subject }}</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">{{ msg.message[:300] }}{% if msg.message|length > 300 %}...{% endif %}</p>
+                    </div>
+                    <div style="text-align: right; flex-shrink: 0; margin-left: 1rem;">
+                        <small style="color: var(--text-muted);">{{ msg.created_at.strftime('%d/%m/%Y %Hh%M') }}</small>
+                        <div style="display: flex; gap: 0.25rem; margin-top: 0.25rem;">
+                            {% if not msg.is_read %}
+                            <form method="POST" action="{{ url_for('admin.mark_read', msg_id=msg.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;"><i class="fas fa-check"></i> Lu</button>
+                            </form>
+                            {% endif %}
+                            <form method="POST" action="{{ url_for('admin.message_delete', msg_id=msg.id) }}" style="display: inline;" onsubmit="return confirm('Supprimer ce message ?')">
+                                <button type="submit" class="btn" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; background: #ef4444; color: #fff; border: none;"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p style="text-align: center; padding: 2rem; color: var(--text-muted);">Aucun message.</p>
+            {% endfor %}
+        </div>
+    </main>
+</div>
+{% endblock %}

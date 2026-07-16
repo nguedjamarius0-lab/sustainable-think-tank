@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.title_fr }} - Tendereo{% endblock %}
+
+{% block content %}
+<div class="breadcrumb-section">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="{{ url_for('main.index') }}">Accueil</a>
+            <span>/</span>
+            <a href="{{ url_for('events.list_events') }}">Événements</a>
+            <span>/</span>
+            <span>{{ event.title_fr[:60] }}{% if event.title_fr|length > 60 %}...{% endif %}</span>
+        </div>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container" style="max-width: 900px;">
+        <span class="event-type-badge" style="font-size: 0.8rem; padding: 0.3rem 0.8rem;">{{ event.event_type.title() }}</span>
+
+        <h1 style="font-size: 2rem; font-weight: 800; margin: 1rem 0; line-height: 1.3;">{{ event.title_fr }}</h1>
+
+        <div style="display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; color: var(--text-muted); font-size: 0.95rem;">
+            <span><i class="fas fa-calendar"></i> {{ event.start_date.strftime('%d %B %Y') }}</span>
+            <span><i class="fas fa-clock"></i> {{ event.start_date.strftime('%Hh%M') }}{% if event.end_date %} - {{ event.end_date.strftime('%Hh%M') }}{% endif %}</span>
+            <span><i class="fas fa-map-marker-alt"></i> {{ event.location or 'En ligne' }}</span>
+        </div>
+
+        {% if event.cover_image %}
+        <img src="{{ url_for('static', filename='uploads/' + event.cover_image) }}" alt="{{ event.title_fr }}" style="width: 100%; border-radius: 12px; margin-bottom: 2rem;">
+        {% endif %}
+
+        <div style="line-height: 1.8; font-size: 1.05rem; margin-bottom: 3rem;">
+            {{ event.description_fr }}
+        </div>
+
+        {% if event.video_replay %}
+        <div style="margin-bottom: 2rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-play-circle" style="color: var(--primary-teal);"></i> Replay vidéo</h3>
+            <div style="aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: #000;">
+                <iframe src="{{ event.video_replay }}" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
+            </div>
+        </div>
+        {% endif %}
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            {% if event.report_file %}
+            <a href="{{ url_for('static', filename='uploads/' + event.report_file) }}" class="btn btn-primary" target="_blank">
+                <i class="fas fa-file-alt"></i> Compte-rendu
+            </a>
+            {% endif %}
+            {% if event.presentation_file %}
+            <a href="{{ url_for('static', filename='uploads/' + event.presentation_file) }}" class="btn btn-outline" target="_blank">
+                <i class="fas fa-file-powerpoint"></i> Présentation
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

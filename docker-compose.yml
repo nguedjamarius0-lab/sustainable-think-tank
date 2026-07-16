@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_CONFIG=production
+      - SECRET_KEY=${SECRET_KEY:-change-this-in-production}
+      - DATABASE_URL=postgresql://tendereo:tendereo@db:5432/tendereo
+      - MAIL_SERVER=${MAIL_SERVER:-smtp.gmail.com}
+      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_USE_TLS=${MAIL_USE_TLS:-True}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER:-noreply@tendereo.org}
+      - DONATION_URL=${DONATION_URL:-#}
+      - ADMIN_REG_CODE=${ADMIN_REG_CODE:-change-this-in-production}
+    depends_on:
+      - db
+    volumes:
+      - uploads:/app/app/static/uploads
+      - instance:/app/instance
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=tendereo
+      - POSTGRES_PASSWORD=tendereo
+      - POSTGRES_DB=tendereo
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  migration:
+    build: .
+    command: flask db upgrade
+    environment:
+      - FLASK_APP=flask_app:app
+      - FLASK_CONFIG=production
+      - DATABASE_URL=postgresql://tendereo:tendereo@db:5432/tendereo
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
+  uploads:
+  instance:

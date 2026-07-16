@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Agir / Rejoindre - Tendereo Sustainability Institute{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-hands-helping"></i> Agir / Rejoindre</h1>
+        <p>Rejoignez notre mouvement pour le développement durable en Afrique</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 4rem;">
+            <div>
+                <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--primary-green); margin-bottom: 1rem;">Devenir membre</h2>
+                <p style="line-height: 1.8; margin-bottom: 1.5rem;">
+                    Rejoignez un réseau de chercheurs, experts et décideurs engagés pour le développement durable. En tant que membre, vous bénéficiez :
+                </p>
+                <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
+                    <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-check-circle" style="color: var(--primary-teal);"></i> Accès privilégié à toutes nos études et rapports
+                    </li>
+                    <li style="padding: 0.5rem 0; display: flex; align-items: gap: 0.75rem;">
+                        <i class="fas fa-check-circle" style="color: var(--primary-teal);"></i> Invitations VIP à nos événements et colloques
+                    </li>
+                    <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-check-circle" style="color: var(--primary-teal);"></i> Participation aux groupes de recherche
+                    </li>
+                    <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-check-circle" style="color: var(--primary-teal);"></i> Réseau d'experts internationaux
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--primary-green); margin-bottom: 1rem;">Mécénat & Entreprises</h2>
+                <p style="line-height: 1.8; margin-bottom: 1.5rem;">
+                    Soutenez la recherche indépendante en Afrique. Votre mécénat nous permet de produire des analyses gratuites accessibles à tous.
+                </p>
+                <div style="background: var(--light-bg); padding: 1.5rem; border-radius: 10px; margin-bottom: 1rem;">
+                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary-green); margin-bottom: 0.5rem;"><i class="fas fa-building"></i> Pour les entreprises</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Visibilité institutionnelle, accès aux études, networking stratégique, et impact RSE mesurable.</p>
+                </div>
+                <div style="background: var(--light-bg); padding: 1.5rem; border-radius: 10px;">
+                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary-green); margin-bottom: 0.5rem;"><i class="fas fa-hand-holding-usd"></i> Dons individuels</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Chaque contribution compte. Accès aux notes privées et newsletter exclusive pour les donateurs.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="max-width: 700px; margin: 0 auto;">
+            <h2 style="font-size: 1.5rem; font-weight: 700; text-align: center; margin-bottom: 2rem;">Formulaire de candidature</h2>
+
+            <form method="POST" action="{{ url_for('join.index') }}">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="name">Nom complet *</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="phone">Téléphone</label>
+                        <input type="tel" id="phone" name="phone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="organization">Organisation</label>
+                        <input type="text" id="organization" name="organization" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="application_type">Type de candidature *</label>
+                    <select id="application_type" name="application_type" class="form-control" required>
+                        <option value="">Sélectionnez...</option>
+                        <option value="membre">Devenir membre</option>
+                        <option value="donateur">Devenir donateur</option>
+                        <option value="mecenat">Mécénat / Entreprise</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="motivation">Motivation</label>
+                    <textarea id="motivation" name="motivation" class="form-control" rows="4" placeholder="Parlez-nous de votre intérêt pour Tendereo..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fas fa-paper-plane"></i> Envoyer ma candidature</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section class="donate-banner">
+    <div class="container">
+        <h2>Soutenez notre mission</h2>
+        <p>Votre contribution nous permet de produire des recherches indépendantes et gratuites.</p>
+        <a href="{{ donation_url | default('#') }}" class="btn-donate-lg" target="_blank">
+            <i class="fas fa-heart"></i> Faire un don maintenant
+        </a>
+    </div>
+</section>
+{% endblock %}

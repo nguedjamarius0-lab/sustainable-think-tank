@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+{% block title %}@{{ user.name|lower|replace(' ', '_') }} - Réseau Tendereo{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block extra_css %}
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #fff; }
+
+/* ── Top bar (image 2) ── */
+.prof-topbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 1rem; background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+}
+.prof-topbar .left { display: flex; align-items: center; gap: 12px; }
+.prof-topbar .icon-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: none; border: none; color: #161823;
+    font-size: 1.1rem; cursor: pointer; position: relative;
+    display: flex; align-items: center; justify-content: center;
+}
+.prof-topbar .icon-btn .notif {
+    position: absolute; top: 0; right: 0;
+    min-width: 16px; height: 16px; border-radius: 8px;
+    background: #fe2c55; color: #fff; font-size: 0.55rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 4px;
+}
+.prof-topbar .right { display: flex; align-items: center; gap: 8px; }
+.prof-topbar .chat-bubble {
+    background: #f5f5f5; border-radius: 20px; padding: 6px 14px;
+    font-size: 0.82rem; color: rgba(22,24,35,0.6); font-weight: 500;
+}
+
+/* ── Header ── */
+.prof-header { text-align: center; padding: 1.2rem 1rem 0; }
+.prof-avatar {
+    width: 96px; height: 96px; border-radius: 50%;
+    margin: 0 auto 0.8rem;
+    background: linear-gradient(135deg, #e53935, #1a1a1a);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 2.5rem; font-weight: 800;
+    border: 3px solid #eee; position: relative;
+}
+.prof-avatar .plus {
+    position: absolute; bottom: 0; right: 0;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #e53935; color: #fff; font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: center;
+    border: 3px solid #fff;
+}
+.prof-name {
+    font-size: 1.4rem; font-weight: 800; color: #161823;
+    display: inline-flex; align-items: center; gap: 6px;
+}
+.prof-name .badge { background: #fe2c55; color: #fff; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+.prof-name .edit { color: rgba(22,24,35,0.4); font-size: 0.85rem; cursor: pointer; margin-left: 4px; }
+.prof-handle { color: rgba(22,24,35,0.5); font-size: 0.9rem; margin-top: 2px; }
+
+/* ── Stats ── */
+.prof-stats { display: flex; justify-content: center; gap: 2rem; margin: 1.2rem 0; }
+.prof-stat { text-align: center; }
+.prof-stat .val { font-size: 1.2rem; font-weight: 800; color: #161823; }
+.prof-stat .lbl { font-size: 0.78rem; color: rgba(22,24,35,0.5); }
+
+/* ── Bio ── */
+.prof-bio { color: #161823; font-size: 0.9rem; max-width: 360px; margin: 0 auto; line-height: 1.6; padding: 0 1rem; }
+
+/* ── Actions ── */
+.prof-actions { display: flex; justify-content: center; gap: 0.6rem; margin-top: 1rem; }
+.prof-btn {
+    padding: 0.55rem 2.2rem; border-radius: 4px; font-size: 0.9rem;
+    font-weight: 600; border: none; cursor: pointer; transition: all 0.15s;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+}
+.prof-btn-follow { background: #fe2c55; color: #fff; }
+.prof-btn-follow:hover { background: #e11d48; }
+.prof-btn-msg { background: #f2f2f2; color: #161823; }
+.prof-btn-msg:hover { background: #e5e5e5; }
+.prof-btn-sub { background: #161823; color: #fff; }
+.prof-btn-sub:hover { background: #333; }
+.prof-btn-studio { background: #f2f2f2; color: #161823; }
+
+/* ── Tabs ── */
+.prof-tabs { display: flex; border-bottom: 1px solid #f0f0f0; margin-top: 1rem; }
+.prof-tab {
+    flex: 1; text-align: center; padding: 0.8rem;
+    color: rgba(22,24,35,0.35); font-size: 1.1rem;
+    cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none;
+}
+.prof-tab.active { color: #161823; border-bottom-color: #161823; }
+.prof-tab:hover { color: rgba(22,24,35,0.6); }
+
+/* ── Grid ── */
+.prof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px; }
+.prof-grid-item {
+    position: relative; aspect-ratio: 9/12;
+    background: #f5f5f5; overflow: hidden; cursor: pointer; text-decoration: none;
+}
+.prof-grid-item img { width: 100%; height: 100%; object-fit: cover; }
+.prof-grid-item .placeholder {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(22,24,35,0.15); font-size: 2rem;
+}
+.prof-grid-item .overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 6px 8px; background: linear-gradient(transparent, rgba(0,0,0,0.6));
+    display: flex; align-items: center; gap: 4px;
+    color: #fff; font-size: 0.72rem; font-weight: 600;
+}
+.prof-grid-item .overlay i { font-size: 0.7rem; }
+
+.prof-empty { text-align: center; padding: 4rem 1rem; color: rgba(22,24,35,0.3); }
+.prof-empty i { font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.3; color: #ccc; }
+.prof-empty h3 { font-size: 1.1rem; color: rgba(22,24,35,0.5); margin-bottom: 0.3rem; }
+.prof-empty p { font-size: 0.85rem; color: rgba(22,24,35,0.4); }
+
+/* ── Bottom nav ── */
+.tt-bottom {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    height: 56px; background: #fff;
+    display: flex; align-items: center; justify-content: space-around;
+    border-top: 1px solid #f0f0f0;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.tt-bnav {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    color: rgba(22,24,35,0.45); text-decoration: none;
+    font-size: 0.62rem; font-weight: 500; padding: 4px 12px;
+    background: none; border: none; cursor: pointer;
+}
+.tt-bnav.active, .tt-bnav:hover { color: #161823; }
+.tt-bnav i { font-size: 1.2rem; }
+.tt-bnav-create {
+    width: 44px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, #e53935, #222);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.4rem; text-decoration: none;
+    position: relative; margin-top: -4px;
+}
+.tt-bnav-create::before { content: ''; position: absolute; inset: 2px; background: #fff; border-radius: 6px; }
+.tt-bnav-create i { position: relative; z-index: 1; color: #161823; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="prof-topbar">
+    <div class="left">
+        <button class="icon-btn"><i class="fas fa-user-friends"></i><span class="notif">1</span></button>
+        <button class="icon-btn"><i class="fas fa-futbol"></i></button>
+    </div>
+    <div class="chat-bubble">Comment ça va ?</div>
+    <div class="right">
+        <button class="icon-btn"><i class="fas fa-calendar-alt"></i></button>
+        <button class="icon-btn"><i class="fas fa-share-alt"></i></button>
+        <button class="icon-btn"><i class="fas fa-bars"></i></button>
+    </div>
+</div>
+
+<div class="prof-header">
+    <div class="prof-avatar">
+        {{ user.name[0]|upper }}
+        <span class="plus"><i class="fas fa-plus"></i></span>
+    </div>
+    <div class="prof-name">
+        {{ user.name }}
+        {% if user.role in ['admin', 'editor'] %}<span class="badge">9+</span>{% endif %}
+        {% if current_user.is_authenticated and current_user.id == user.id %}
+        <i class="fas fa-pen edit"></i>
+        {% endif %}
+    </div>
+    <div class="prof-handle">@{{ user.name|lower|replace(' ', '_') }}</div>
+
+    <div class="prof-stats">
+        <div class="prof-stat"><div class="val">{{ videos|length }}</div><div class="lbl">Suivis</div></div>
+        <div class="prof-stat"><div class="val">{{ total_likes }}</div><div class="lbl">J'aime</div></div>
+        <div class="prof-stat"><div class="val">{{ total_views }}</div><div class="lbl">Vues</div></div>
+    </div>
+
+    <div class="prof-bio">
+        {% if user.role == 'admin' %}Administrateur{% elif user.role == 'editor' %}Éditeur{% else %}Membre{% endif %} — Tendereo Sustainability Institute
+    </div>
+
+    <div class="prof-actions">
+        {% if current_user.is_authenticated and current_user.id != user.id %}
+        <button class="prof-btn prof-btn-follow"><i class="fas fa-user-plus"></i> Suivre</button>
+        {% endif %}
+        <button class="prof-btn prof-btn-studio"><i class="fas fa-chart-bar"></i> Tendereo Studio</button>
+        {% if current_user.is_authenticated and current_user.id != user.id %}
+        <button class="prof-btn prof-btn-sub"><i class="fas fa-bell"></i> Abonnement</button>
+        {% endif %}
+    </div>
+
+    <div class="prof-tabs">
+        <button class="prof-tab active"><i class="fas fa-th"></i></button>
+        <button class="prof-tab"><i class="fas fa-lock"></i></button>
+        <button class="prof-tab"><i class="fas fa-sync-alt"></i></button>
+        <button class="prof-tab"><i class="fas fa-bookmark"></i></button>
+        <button class="prof-tab"><i class="fas fa-heart"></i></button>
+    </div>
+</div>
+
+{% if videos %}
+<div class="prof-grid">
+    {% for video in videos %}
+    <a href="{{ url_for('reseau.detail', video_id=video.id) }}" class="prof-grid-item">
+        {% if video.thumbnail_url %}
+        <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}">
+        {% else %}
+        <div class="placeholder"><i class="fas fa-play"></i></div>
+        {% endif %}
+        <div class="overlay"><i class="fas fa-play"></i> {{ video.views }}</div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="prof-empty">
+    <i class="fas fa-video-slash"></i>
+    <h3>Aucune vidéo</h3>
+    <p>{{ user.name }} n'a pas encore publié de contenu.</p>
+</div>
+{% endif %}
+
+<nav class="tt-bottom">
+    <a href="{{ url_for('reseau.index') }}" class="tt-bnav"><i class="fas fa-home"></i><span>Accueil</span></a>
+    <a href="#" class="tt-bnav"><i class="fas fa-users"></i><span>Ami(e)s</span></a>
+    {% if current_user.is_authenticated and current_user.can_publish() %}
+    <a href="{{ url_for('reseau.publish') }}" class="tt-bnav-create"><i class="fas fa-plus"></i></a>
+    {% else %}
+    <button class="tt-bnav-create" style="opacity:0.3;cursor:default;"><i class="fas fa-plus"></i></button>
+    {% endif %}
+    <a href="#" class="tt-bnav"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('reseau.profile', user_id=current_user.id) }}" class="tt-bnav active"><i class="fas fa-user"></i><span>Profil</span></a>
+    {% else %}
+    <a href="{{ url_for('auth.login') }}" class="tt-bnav"><i class="fas fa-user"></i><span>Profil</span></a>
+    {% endif %}
+</nav>
+{% endblock %}

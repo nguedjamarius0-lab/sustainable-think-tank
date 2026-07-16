@@ -1,0 +1,37 @@
+{% extends "admin/dashboard.html" %}
+{% block title %}Actualités - Admin Tendereo{% endblock %}
+{% block content %}
+<div class="admin-layout">
+    {% include "admin/_sidebar.html" %}
+    <main class="admin-main">
+        <div class="admin-header">
+            <h1><i class="fas fa-bolt"></i> Actualités</h1>
+            <a href="{{ url_for('admin.news_create') }}" class="btn btn-primary" style="padding: 0.5rem 1.2rem;"><i class="fas fa-plus"></i> Ajouter</a>
+        </div>
+        <div class="admin-card" style="overflow-x: auto;">
+            <table class="admin-table">
+                <thead>
+                    <tr><th>Titre</th><th>Publié</th><th>Date</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for item in news %}
+                    <tr>
+                        <td><strong>{{ item.title_fr[:60] }}{% if item.title_fr|length > 60 %}...{% endif %}</strong></td>
+                        <td>{{ 'Oui' if item.is_published else 'Non' }}</td>
+                        <td>{{ item.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.news_edit', news_id=item.id) }}" class="btn btn-outline" style="padding: 0.3rem 0.7rem; font-size: 0.8rem;"><i class="fas fa-edit"></i></a>
+                            <form action="{{ url_for('admin.news_delete', news_id=item.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Supprimer cette actualité ?')">
+                                <button type="submit" class="btn" style="padding: 0.3rem 0.7rem; font-size: 0.8rem; background: #ef4444; color: #fff; border: none;"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">Aucune actualité.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+{% endblock %}

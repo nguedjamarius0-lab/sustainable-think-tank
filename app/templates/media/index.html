@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Espace Médias - Tendereo Sustainability Institute{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-newspaper"></i> Espace Médias / Presse</h1>
+        <p>Ressources pour les journalistes et la presse</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3rem; flex-wrap: wrap; gap: 2rem;">
+            <div style="flex: 1; min-width: 300px;">
+                <h2 class="section-title">Dossier de presse</h2>
+                <p class="section-subtitle">Téléchargez nos ressources médiatiques</p>
+
+                <div class="grid-3" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="media-kit-card">
+                        <div class="icon"><i class="fas fa-image" style="color: var(--primary-teal);"></i></div>
+                        <h4>Logo</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Logo officiel Tendereo en haute résolution</p>
+                        <a href="{{ url_for('static', filename='images/logo.png') }}" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.85rem;" download>
+                            <i class="fas fa-download"></i> Télécharger
+                        </a>
+                    </div>
+                    <div class="media-kit-card">
+                        <div class="icon"><i class="fas fa-palette" style="color: var(--primary-green);"></i></div>
+                        <h4>Charte graphique</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Guide d'utilisation de nos couleurs et typographies</p>
+                        <a href="#" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.85rem;" download>
+                            <i class="fas fa-download"></i> Télécharger
+                        </a>
+                    </div>
+                    <div class="media-kit-card">
+                        <div class="icon"><i class="fas fa-camera" style="color: var(--accent-teal);"></i></div>
+                        <h4>Photos experts</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Portraits officiels de nos chercheurs</p>
+                        <a href="{{ url_for('team.index') }}" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                            <i class="fas fa-eye"></i> Voir l'équipe
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="flex: 0 0 350px; background: var(--light-bg); padding: 2rem; border-radius: 12px;">
+                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-headset" style="color: var(--primary-teal);"></i> Contact presse</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                    Pour toute demande médiatique, interview ou accréditation presse, contactez directement notre responsable communication :
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <strong>Responsable Communication</strong><br>
+                    <span style="color: var(--text-muted);">Tendereo Sustainability Institute</span>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <a href="mailto:presse@tendereo.org" style="display: flex; align-items: center; gap: 0.5rem; color: var(--primary-teal); font-weight: 600;">
+                        <i class="fas fa-envelope"></i> presse@tendereo.org
+                    </a>
+                </div>
+                <div>
+                    <a href="tel:+22500000000" style="display: flex; align-items: center; gap: 0.5rem; color: var(--primary-teal); font-weight: 600;">
+                        <i class="fas fa-phone"></i> +225 00 00 00 00
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background: var(--light-bg);">
+    <div class="container">
+        <h2 class="section-title">Revue de presse</h2>
+        <p class="section-subtitle">Retrouvez nos mentions dans les médias</p>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% for mention in press_mentions %}
+            <a href="{{ mention.source_url }}" target="_blank" class="press-card">
+                <div class="press-source">{{ mention.source_name }}</div>
+                <div style="flex: 1;">
+                    <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem;">{{ mention.title }}</h4>
+                    {% if mention.description %}
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">{{ mention.description[:150] }}{% if mention.description|length > 150 %}...{% endif %}</p>
+                    {% endif %}
+                </div>
+                <div style="flex-shrink: 0; font-size: 0.8rem; color: var(--text-muted);">
+                    {% if mention.publication_date %}{{ mention.publication_date.strftime('%d/%m/%Y') }}{% endif %}
+                    <i class="fas fa-external-link-alt" style="margin-left: 0.5rem; color: var(--primary-teal);"></i>
+                </div>
+            </a>
+            {% else %}
+            <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                <i class="fas fa-newspaper" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                <h3>Aucune mention presse pour le instant</h3>
+                <p>Retrouvez nos apparitions dans les médias ici.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

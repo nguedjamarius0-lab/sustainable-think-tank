@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block title %}{{ video.title }} - Réseau Tendereo{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block extra_css %}
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { overflow: hidden; background: #000; }
+
+.vd-back {
+    position: fixed; top: 12px; left: 12px; z-index: 250;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(0,0,0,0.45); backdrop-filter: blur(8px);
+    border: none; color: #fff; font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+}
+.vd-main {
+    width: 100vw; height: 100vh; background: #000;
+    display: flex; align-items: center; justify-content: center;
+}
+.vd-player { width: 100%; height: 100%; max-width: 480px; position: relative; }
+.vd-player iframe { width: 100%; height: 100%; border: none; }
+
+.vd-play {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 68px; height: 68px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.8rem; cursor: pointer; z-index: 10;
+    border: 2px solid rgba(255,255,255,0.25); transition: all 0.25s;
+}
+.vd-play:hover { background: rgba(255,255,255,0.3); transform: translate(-50%,-50%) scale(1.08); }
+
+.vd-info {
+    position: absolute; bottom: 76px; left: 14px; right: 80px;
+    z-index: 10; color: #fff;
+}
+.vd-info .author { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.vd-info .author-av {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #e53935, #1a1a1a);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 0.85rem; border: 2px solid #fff;
+}
+.vd-info .author-name { font-weight: 700; font-size: 0.95rem; text-shadow: 0 1px 4px rgba(0,0,0,0.7); }
+.vd-info .desc {
+    font-size: 0.82rem; color: rgba(255,255,255,0.85); line-height: 1.4; margin-bottom: 8px;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.vd-info .music { font-size: 0.78rem; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px; }
+
+.vd-side {
+    position: absolute; right: 10px; bottom: 100px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px; z-index: 10;
+}
+.vd-sbtn {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    color: #fff; text-decoration: none; cursor: pointer;
+    transition: transform 0.2s; background: none; border: none;
+}
+.vd-sbtn:hover { transform: scale(1.12); }
+.vd-sbtn .ic {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: rgba(255,255,255,0.12); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem; border: 1px solid rgba(255,255,255,0.15); transition: all 0.2s;
+}
+.vd-sbtn .ic.liked { background: rgba(239,68,68,0.85); border-color: transparent; }
+.vd-sbtn .num { font-size: 0.68rem; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+
+/* ── Comment bar ── */
+.vd-cbar {
+    position: absolute; bottom: 18px; left: 12px; right: 12px; z-index: 150;
+}
+.vd-cbar input {
+    width: 100%; padding: 12px 50px 12px 16px;
+    border-radius: 24px; border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+    color: #fff; font-size: 0.85rem; outline: none;
+}
+.vd-cbar input::placeholder { color: rgba(255,255,255,0.5); }
+.vd-cbar button {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer; padding: 8px;
+}
+
+/* ── Drawer ── */
+.vd-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 300; display: none;
+}
+.vd-overlay.open { display: block; }
+.vd-drawer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    max-height: 70vh; background: #1a1a1a;
+    border-radius: 16px 16px 0 0; z-index: 301;
+    transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    display: flex; flex-direction: column;
+}
+.vd-drawer.open { transform: translateY(0); }
+.vd-drawer-handle { width: 36px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.3); margin: 10px auto 0; flex-shrink: 0; }
+.vd-drawer-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;
+}
+.vd-drawer-hdr h3 { color: #fff; font-size: 0.95rem; font-weight: 700; }
+.vd-drawer-hdr button { background: none; border: none; color: rgba(255,255,255,0.5); font-size: 1.1rem; cursor: pointer; }
+.vd-drawer-body { flex: 1; overflow-y: auto; padding: 12px 16px; -webkit-overflow-scrolling: touch; }
+
+.vd-citem { display: flex; gap: 10px; margin-bottom: 16px; }
+.vd-citem .av {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #e53935, #1a1a1a);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+}
+.vd-citem .body { flex: 1; }
+.vd-citem .uname { font-size: 0.78rem; color: rgba(255,255,255,0.5); font-weight: 600; margin-bottom: 2px; }
+.vd-citem .ctxt { font-size: 0.85rem; color: rgba(255,255,255,0.9); line-height: 1.4; }
+.vd-citem .cmeta {
+    font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 3px;
+    display: flex; gap: 12px;
+}
+.vd-citem .cmeta button { background: none; border: none; color: rgba(255,255,255,0.35); font-size: 0.7rem; cursor: pointer; padding: 0; }
+.vd-reply { margin-left: 42px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.1); }
+.vd-empty-c { text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,0.3); }
+.vd-empty-c i { font-size: 2.5rem; margin-bottom: 0.8rem; display: block; }
+
+/* ── Bottom nav ── */
+.tt-bottom {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    height: 56px; background: #000;
+    display: flex; align-items: center; justify-content: space-around;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.tt-bnav {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    color: rgba(255,255,255,0.55); text-decoration: none;
+    font-size: 0.62rem; font-weight: 500; padding: 4px 12px;
+    background: none; border: none; cursor: pointer;
+}
+.tt-bnav.active, .tt-bnav:hover { color: #fff; }
+.tt-bnav i { font-size: 1.2rem; }
+.tt-bnav-create {
+    width: 44px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, #e53935, #1a1a1a);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.4rem; text-decoration: none;
+    position: relative; margin-top: -4px;
+}
+.tt-bnav-create::before { content: ''; position: absolute; inset: 2px; background: #000; border-radius: 6px; }
+.tt-bnav-create i { position: relative; z-index: 1; }
+
+@media (min-width: 769px) { .vd-player { max-width: 420px; } }
+@media (max-width: 768px) { .vd-side { right: 6px; gap: 14px; } .vd-sbtn .ic { width: 40px; height: 40px; font-size: 1.1rem; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<button class="vd-back" onclick="history.back()"><i class="fas fa-arrow-left"></i></button>
+
+<div class="vd-main">
+    <div class="vd-player">
+        <iframe src="{{ video.get_embed_url() }}" allowfullscreen allow="autoplay; encrypted-media" id="vdIfr"></iframe>
+        <div class="vd-play" onclick="vdPlay(this)" id="vdPlayBtn"><i class="fas fa-play" style="margin-left:3px;"></i></div>
+
+        <div class="vd-info">
+            <div class="author">
+                <div class="author-av">{% if video.creator %}{{ video.creator.name[0]|upper }}{% else %}T{% endif %}</div>
+                <span class="author-name">@{{ video.creator.name|lower|replace(' ', '_') if video.creator else 'tendereo' }}</span>
+            </div>
+            {% if video.description %}<div class="desc">{{ video.description }}</div>{% endif %}
+            <div class="music"><i class="fas fa-music"></i> {{ video.title }}</div>
+        </div>
+
+        <div class="vd-side">
+            <a class="vd-sbtn" href="{{ url_for('reseau.profile', user_id=video.created_by) }}">
+                <div class="ic" style="border-color:#fff;background:linear-gradient(135deg,#e53935,#1a1a1a);">{% if video.creator %}{{ video.creator.name[0]|upper }}{% else %}T{% endif %}</div>
+            </a>
+            <button class="vd-sbtn" onclick="vdLike({{ video.id }}, this)">
+                <div class="ic {% if video.is_liked_by(current_user) %}liked{% endif %}" id="vdLik"><i class="fas fa-heart"></i></div>
+                <span class="num" id="vdLkc">{{ video.get_like_count() }}</span>
+            </button>
+            <button class="vd-sbtn" onclick="openDrawer()">
+                <div class="ic"><i class="fas fa-comment-dots"></i></div>
+                <span class="num" id="vdCmc">{{ video.get_comment_count() }}</span>
+            </button>
+            <button class="vd-sbtn" onclick="vdBookmark(this)">
+                <div class="ic"><i class="fas fa-bookmark"></i></div>
+                <span class="num">{{ video.views }}</span>
+            </button>
+            <button class="vd-sbtn" onclick="vdShare()">
+                <div class="ic"><i class="fas fa-share"></i></div>
+                <span class="num">Partager</span>
+            </button>
+        </div>
+
+        <div class="vd-cbar" onclick="openDrawer()">
+            <input type="text" placeholder="Ajouter un commentaire..." readonly>
+            <button><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+
+<div class="vd-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="vd-drawer" id="drawer">
+    <div class="vd-drawer-handle"></div>
+    <div class="vd-drawer-hdr">
+        <h3>{{ video.get_comment_count() }} commentaire{{ 's' if video.get_comment_count() != 1 }}</h3>
+        <button onclick="closeDrawer()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="vd-drawer-body">
+        {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('reseau.comment', video_id=video.id) }}" style="display:flex;gap:8px;margin-bottom:20px;align-items:center;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="text" name="content" placeholder="Écrivez un commentaire..." required
+                   style="flex:1;padding:10px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:0.85rem;outline:none;">
+            <button type="submit" style="background:none;border:none;color:#fe2c55;font-size:1rem;cursor:pointer;padding:8px;"><i class="fas fa-paper-plane"></i></button>
+        </form>
+        {% endif %}
+        {% for comment in comments %}
+        <div class="vd-citem">
+            <div class="av">{{ comment.user.name[0]|upper }}</div>
+            <div class="body">
+                <div class="uname">{{ comment.user.name }}</div>
+                <div class="ctxt">{{ comment.content }}</div>
+                <div class="cmeta">
+                    <span>{{ comment.created_at.strftime('%d/%m') }}</span>
+                    {% if current_user.is_authenticated %}<button onclick="document.getElementById('rf-{{ comment.id }}').style.display='flex'">Répondre</button>{% endif %}
+                </div>
+                {% if current_user.is_authenticated %}
+                <div id="rf-{{ comment.id }}" style="display:none;margin-top:8px;">
+                    <form method="POST" action="{{ url_for('reseau.reply', comment_id=comment.id) }}" style="display:flex;gap:6px;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="text" name="content" placeholder="Réponse..." required style="flex:1;padding:8px 12px;border-radius:16px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:#fff;font-size:0.8rem;outline:none;">
+                        <button type="submit" style="background:none;border:none;color:#fe2c55;font-size:0.85rem;cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+                {% endif %}
+                {% for reply in comment.replies.all() %}
+                <div class="vd-reply">
+                    <div class="vd-citem" style="margin-top:8px;">
+                        <div class="av" style="width:24px;height:24px;font-size:0.6rem;">{{ reply.user.name[0]|upper }}</div>
+                        <div class="body"><div class="uname">{{ reply.user.name }}</div><div class="ctxt">{{ reply.content }}</div></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="vd-empty-c">
+            <i class="fas fa-comment-dots"></i>
+            <p>Aucun commentaire.</p>
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.login') }}" style="color:#fe2c55;margin-top:0.5rem;display:inline-block;">Connectez-vous</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<nav class="tt-bottom">
+    <a href="{{ url_for('reseau.index') }}" class="tt-bnav"><i class="fas fa-home"></i><span>Accueil</span></a>
+    <a href="#" class="tt-bnav"><i class="fas fa-users"></i><span>Ami(e)s</span></a>
+    {% if current_user.is_authenticated and current_user.can_publish() %}
+    <a href="{{ url_for('reseau.publish') }}" class="tt-bnav-create"><i class="fas fa-plus"></i></a>
+    {% else %}
+    <button class="tt-bnav-create" style="opacity:0.3;cursor:default;"><i class="fas fa-plus"></i></button>
+    {% endif %}
+    <a href="#" class="tt-bnav"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('reseau.profile', user_id=current_user.id) }}" class="tt-bnav"><i class="fas fa-user"></i><span>Profil</span></a>
+    {% else %}
+    <a href="{{ url_for('auth.login') }}" class="tt-bnav"><i class="fas fa-user"></i><span>Profil</span></a>
+    {% endif %}
+</nav>
+
+<script>
+function vdPlay(btn) { var ifr = document.getElementById('vdIfr'); if (ifr.src.indexOf('autoplay=1') === -1) ifr.src += (ifr.src.indexOf('?') > -1 ? '&' : '?') + 'autoplay=1'; btn.style.display = 'none'; }
+function vdLike(id, el) {
+    fetch('/reseaux/' + id + '/like', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(r => r.json()).then(data => {
+        document.getElementById('vdLkc').textContent = data.count;
+        var ic = document.getElementById('vdLik');
+        if (data.liked) ic.classList.add('liked'); else ic.classList.remove('liked');
+    });
+}
+function vdShare() { var url = window.location.href; if (navigator.share) navigator.share({ url: url }); else { navigator.clipboard.writeText(url); alert('Lien copié !'); } }
+function vdBookmark(el) { var ic = el.querySelector('.ic'); ic.style.background = 'rgba(250,204,21,0.8)'; ic.style.borderColor = 'transparent'; }
+function openDrawer() { document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('drawer').classList.add('open'); }
+function closeDrawer() { document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('drawer').classList.remove('open'); }
+</script>
+{% endblock %}

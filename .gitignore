@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment variables
+.env
+
+# Instance
+instance/
+
+# Database
+*.db
+*.sqlite3
+
+# Uploads
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+
+# Flask
+flask_session/
+
+# Migrations (generated files)
+# migrations/  # Uncomment to ignore migrations
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/

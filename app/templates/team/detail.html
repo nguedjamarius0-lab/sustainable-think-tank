@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}{{ team.name }} - Tendereo{% endblock %}
+{% block content %}
+<div class="breadcrumb-section">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="{{ url_for('main.index') }}">Accueil</a>
+            <span>/</span>
+            <a href="{{ url_for('team.index') }}">Équipe</a>
+            <span>/</span>
+            <span>{{ team.name }}</span>
+        </div>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container" style="max-width: 900px;">
+        <span class="card-category">{{ team.theme }}</span>
+        <h1 style="font-size: 1.8rem; font-weight: 800; margin: 0.75rem 0;">{{ team.name }}</h1>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">
+            Créée le {{ team.created_at.strftime('%d %B %Y') }} par {{ team.creator.name if team.creator else 'Inconnu' }}
+        </p>
+        <p style="margin-bottom: 1.5rem;">
+            {% if team.status == 'pending' %}
+            <span class="badge" style="background: #f59e0b; color: #fff; padding: 0.3rem 0.8rem;">En attente de validation</span>
+            {% elif team.status == 'validated' %}
+            <span class="badge" style="background: var(--primary-green); color: #fff; padding: 0.3rem 0.8rem;">Validée</span>
+            {% else %}
+            <span class="badge" style="background: #ef4444; color: #fff; padding: 0.3rem 0.8rem;">Rejetée</span>
+            {% endif %}
+        </p>
+
+        {% if team.status == 'pending' and current_user.is_authenticated and team.created_by == current_user.id %}
+        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 2px solid #25D366; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; text-align: center;">
+            <p style="font-size: 0.95rem; color: #128C7E; font-weight: 600; margin-bottom: 0.5rem;">
+                <i class="fas fa-clock"></i> Votre équipe est en attente de validation
+            </p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Besoin d'un suivi rapide ? Contactez l'administration directement :
+            </p>
+            <a href="https://wa.me/237651443798?text=Bonjour%2C%20je%20suis%20en%20attente%20de%20validation%20de%20mon%20%C3%A9quipe%20%22{{ team.name | urlencode }}%22%20sur%20Tendereo." 
+               target="_blank" 
+               style="display: inline-flex; align-items: center; gap: 0.5rem; background: #25D366; color: #fff; padding: 0.7rem 1.5rem; border-radius: 25px; font-weight: 600; text-decoration: none; font-size: 0.95rem;">
+                <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Suivre sur WhatsApp
+            </a>
+        </div>
+        {% endif %}
+
+        {% if current_user.is_authenticated and (team.created_by == current_user.id or current_user.role == 'admin') and team.status == 'pending' %}
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 2rem;">
+            <a href="{{ url_for('team.edit', team_id=team.id) }}" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
+            <form action="{{ url_for('team.delete', team_id=team.id) }}" method="POST" onsubmit="return confirm('Supprimer cette équipe ?')">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: #ef4444; color: #fff;">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if team.description %}
+        <div style="background: var(--light-bg); padding: 2rem; border-radius: 12px; margin-bottom: 2rem; line-height: 1.8;">
+            {{ team.description }}
+        </div>
+        {% endif %}
+
+        {% if team.vision %}
+        <div style="background: var(--white); border: 2px solid var(--primary-teal); padding: 2rem; border-radius: 12px; margin-bottom: 2rem;">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary-teal);">
+                <i class="fas fa-lightbulb"></i> Vision et idéologie
+            </h3>
+            <p style="line-height: 1.8; color: var(--text-muted);">{{ team.vision }}</p>
+        </div>
+        {% endif %}
+
+        {% if current_user.is_authenticated and team.created_by == current_user.id %}
+            {% if team.status == 'validated' %}
+            <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 2px solid var(--primary-green); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; text-align: center;">
+                <p style="font-size: 1.1rem; color: var(--primary-green); font-weight: 700; margin-bottom: 0.5rem;">
+                    <i class="fas fa-check-circle"></i> Votre équipe a été acceptée !
+                </p>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Félicitations ! Votre équipe de recherche est désormais validée et visible sur la plateforme.</p>
+            </div>
+            {% elif team.status == 'rejected' %}
+            <div style="background: linear-gradient(135deg, #fef2f2 0%, #fef2f2 100%); border: 2px solid #ef4444; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; text-align: center;">
+                <p style="font-size: 1.1rem; color: #ef4444; font-weight: 700; margin-bottom: 0.5rem;">
+                    <i class="fas fa-times-circle"></i> Votre équipe a été rejetée
+                </p>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Si vous avez des questions, contactez l'administration :</p>
+                <a href="https://wa.me/237651443798?text=Bonjour%2C%20mon%20%C3%A9quipe%20%22{{ team.name | urlencode }}%22%20a%20%C3%A9t%C3%A9%20rejet%C3%A9e.%20Pouvez-vous%20m%27indiquer%20la%20raison%20%3F" 
+                   target="_blank" 
+                   style="display: inline-flex; align-items: center; gap: 0.5rem; background: #25D366; color: #fff; padding: 0.7rem 1.5rem; border-radius: 25px; font-weight: 600; text-decoration: none; font-size: 0.95rem;">
+                    <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Contacter l'administration
+                </a>
+            </div>
+            {% endif %}
+        {% endif %}
+
+        <h2 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem;">
+            <i class="fas fa-users" style="color: var(--primary-teal);"></i> Membres ({{ members|length }})
+        </h2>
+
+        <div class="grid-3">
+            {% for member in members %}
+            <div class="team-card">
+                <div class="team-photo">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3>{{ member.name }}</h3>
+                <p class="role">{{ member.role }}</p>
+                {% if member.whatsapp %}
+                <p style="margin: 0.5rem 0;">
+                    <a href="https://wa.me/{{ member.whatsapp.replace('+', '').replace(' ', '') }}" target="_blank" style="display: inline-flex; align-items: center; gap: 0.3rem; color: #25D366; font-size: 0.85rem; text-decoration: none; font-weight: 600;">
+                        <i class="fab fa-whatsapp" style="font-size: 1rem;"></i> {{ member.whatsapp }}
+                    </a>
+                </p>
+                {% endif %}
+                {% if member.bio %}
+                <p class="bio">{{ member.bio[:150] }}{% if member.bio|length > 150 %}...{% endif %}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

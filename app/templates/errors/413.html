@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Fichier trop volumineux - Tendereo{% endblock %}
+{% block content %}
+<section class="section" style="min-height: 80vh; display: flex; align-items: center; justify-content: center; background: var(--light-bg);">
+    <div style="text-align: center; padding: 2rem;">
+        <h1 style="font-size: 6rem; font-weight: 800; color: var(--error); margin-bottom: 1rem;">413</h1>
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">Fichier trop volumineux</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+            Le fichier que vous essayez d'envoyer dépasse la taille maximale autorisée (16 Mo).
+        </p>
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+            <i class="fas fa-home"></i> Retour à l'accueil
+        </a>
+    </div>
+</section>
+{% endblock %}

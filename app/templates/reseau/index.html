@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+{% block title %}Réseau - Tendereo{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block extra_css %}
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { overflow: hidden; background: #000; }
+
+/* ── Top nav ── */
+.tt-topnav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    gap: 0.5rem; padding: 0.6rem 1rem;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+}
+.tt-topnav .live-btn {
+    display: flex; align-items: center; gap: 4px;
+    background: none; border: none; color: rgba(255,255,255,0.7);
+    font-size: 0.85rem; font-weight: 600; cursor: pointer; padding: 4px 8px;
+}
+.tt-topnav .live-btn i { color: #fe2c55; }
+.tt-topnav a, .tt-topnav button {
+    color: rgba(255,255,255,0.55); font-size: 0.95rem; font-weight: 600;
+    text-decoration: none; transition: color 0.2s; position: relative;
+    padding: 4px 10px; background: none; border: none; cursor: pointer;
+}
+.tt-topnav a.active, .tt-topnav button.active { color: #fff; }
+.tt-topnav a.active::after, .tt-topnav button.active::after {
+    content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 20px; height: 2.5px; background: #fff; border-radius: 2px;
+}
+.tt-topnav .search { position: absolute; right: 1rem; color: rgba(255,255,255,0.6); font-size: 1.1rem; cursor: pointer; background: none; border: none; }
+
+/* ── Feed ── */
+.tt-feed {
+    width: 100vw; height: 100vh;
+    scroll-snap-type: y mandatory; overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+.tt-feed::-webkit-scrollbar { display: none; }
+.tt-slide {
+    scroll-snap-align: start;
+    width: 100vw; height: 100vh;
+    position: relative; background: #000;
+    display: flex; align-items: center; justify-content: center;
+}
+.tt-video-wrap {
+    position: relative; width: 100%; height: 100%;
+    max-width: 480px; margin: 0 auto;
+}
+.tt-video-wrap iframe { width: 100%; height: 100%; border: none; }
+
+/* ── Play overlay ── */
+.tt-play {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 68px; height: 68px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.8rem; cursor: pointer; z-index: 10;
+    border: 2px solid rgba(255,255,255,0.25); transition: all 0.25s;
+}
+.tt-play:hover { background: rgba(255,255,255,0.3); transform: translate(-50%,-50%) scale(1.08); }
+
+/* ── Creator bar bottom-left ── */
+.tt-creator {
+    position: absolute; bottom: 76px; left: 14px; right: 80px;
+    z-index: 10; color: #fff;
+}
+.tt-creator .uname {
+    font-weight: 700; font-size: 1rem; margin-bottom: 6px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+}
+.tt-creator .desc {
+    font-size: 0.82rem; color: rgba(255,255,255,0.85);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; line-height: 1.4;
+}
+.tt-creator .music {
+    margin-top: 8px; font-size: 0.78rem; color: rgba(255,255,255,0.7);
+    display: flex; align-items: center; gap: 6px;
+    overflow: hidden; white-space: nowrap;
+}
+.tt-creator .music i { font-size: 0.85rem; }
+
+/* ── Right actions ── */
+.tt-actions {
+    position: absolute; right: 10px; bottom: 100px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    z-index: 10;
+}
+.tt-abtn {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    color: #fff; text-decoration: none; cursor: pointer;
+    transition: transform 0.2s; background: none; border: none;
+}
+.tt-abtn:hover { transform: scale(1.12); }
+.tt-abtn .ic {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: rgba(255,255,255,0.12); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem; border: 1px solid rgba(255,255,255,0.15);
+    transition: all 0.2s;
+}
+.tt-abtn .ic.liked { background: rgba(239,68,68,0.85); border-color: transparent; }
+.tt-abtn .num {
+    font-size: 0.68rem; font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+.tt-avatar-btn {
+    width: 46px; height: 46px; border-radius: 50%;
+    border: 2px solid #fff; overflow: hidden;
+    background: linear-gradient(135deg, #e53935, #1a1a1a);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer;
+    position: relative; text-decoration: none;
+}
+.tt-avatar-btn .plus {
+    position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #fe2c55; color: #fff; font-size: 0.7rem;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid #000;
+}
+
+/* ── Scroll hint ── */
+.tt-hint {
+    position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.4); font-size: 0.72rem; z-index: 10;
+    animation: bounce 2s infinite;
+}
+@keyframes bounce {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-6px); }
+}
+
+/* ── Dots ── */
+.tt-dots {
+    position: fixed; right: 8px; top: 50%; transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 5px; z-index: 150;
+}
+.tt-dots .d {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.25); cursor: pointer; transition: all 0.3s;
+}
+.tt-dots .d.on { background: #fff; transform: scale(1.4); }
+
+/* ── Bottom nav ── */
+.tt-bottom {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    height: 56px; background: #000;
+    display: flex; align-items: center; justify-content: space-around;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.tt-bnav {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    color: rgba(255,255,255,0.55); text-decoration: none;
+    font-size: 0.62rem; font-weight: 500; position: relative;
+    padding: 4px 12px; background: none; border: none; cursor: pointer;
+}
+.tt-bnav.active, .tt-bnav:hover { color: #fff; }
+.tt-bnav i { font-size: 1.2rem; }
+.tt-bnav .badge-dot {
+    position: absolute; top: 0; right: 6px;
+    min-width: 16px; height: 16px; border-radius: 8px;
+    background: #fe2c55; color: #fff; font-size: 0.55rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 4px;
+}
+.tt-bnav-create {
+    width: 44px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, #e53935, #222);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.4rem; text-decoration: none;
+    position: relative; margin-top: -4px;
+}
+.tt-bnav-create::before {
+    content: ''; position: absolute; inset: 2px;
+    background: #000; border-radius: 6px;
+}
+.tt-bnav-create i { position: relative; z-index: 1; }
+
+/* ── Empty ── */
+.tt-empty {
+    height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, #111 0%, #1a1a1a 100%);
+    color: #fff; text-align: center; flex-direction: column;
+    padding-bottom: 56px;
+}
+.tt-empty i { font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.25; }
+.tt-empty h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
+.tt-empty p { color: rgba(255,255,255,0.5); font-size: 0.9rem; }
+
+@media (min-width: 769px) { .tt-video-wrap { max-width: 420px; } }
+@media (max-width: 768px) {
+    .tt-actions { right: 6px; gap: 14px; }
+    .tt-abtn .ic { width: 40px; height: 40px; font-size: 1.1rem; }
+    .tt-dots { display: none; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="tt-topnav">
+    <button class="live-btn"><i class="fas fa-broadcast-tower"></i> LIVE</button>
+    <button class="active">Pour toi</button>
+    <a href="#">Suivis</a>
+    <button class="search"><i class="fas fa-search"></i></button>
+</nav>
+
+{% if videos %}
+<div class="tt-feed" id="ttFeed">
+    {% for video in videos %}
+    <div class="tt-slide">
+        <div class="tt-video-wrap">
+            <iframe src="{{ video.get_embed_url() }}" allowfullscreen allow="autoplay; encrypted-media" id="ifr-{{ video.id }}"></iframe>
+            <div class="tt-play" onclick="ttPlay({{ video.id }}, this)" id="pb-{{ video.id }}"><i class="fas fa-play" style="margin-left:3px;"></i></div>
+
+            <div class="tt-creator">
+                <div class="uname">{{ video.title }}</div>
+                {% if video.description %}
+                <div class="desc">{{ video.description }}</div>
+                {% endif %}
+                <div class="music"><i class="fas fa-music"></i> <span>{{ video.title }}</span></div>
+            </div>
+
+            <div class="tt-actions">
+                <a class="tt-avatar-btn" href="{{ url_for('reseau.profile', user_id=video.created_by) }}">
+                    {% if video.creator %}{{ video.creator.name[0]|upper }}{% else %}T{% endif %}
+                    <span class="plus"><i class="fas fa-plus"></i></span>
+                </a>
+
+                <button class="tt-abtn" onclick="event.preventDefault(); ttLike({{ video.id }}, this);">
+                    <div class="ic {% if video.is_liked_by(current_user) %}liked{% endif %}" id="lik-{{ video.id }}"><i class="fas fa-heart"></i></div>
+                    <span class="num" id="lkc-{{ video.id }}">{{ video.get_like_count() }}</span>
+                </button>
+
+                <a class="tt-abtn" href="{{ url_for('reseau.detail', video_id=video.id) }}">
+                    <div class="ic"><i class="fas fa-comment-dots"></i></div>
+                    <span class="num">{{ video.get_comment_count() }}</span>
+                </a>
+
+                <button class="tt-abtn" onclick="ttBookmark(this)">
+                    <div class="ic"><i class="fas fa-bookmark"></i></div>
+                    <span class="num">{{ video.views }}</span>
+                </button>
+
+                <button class="tt-abtn" onclick="ttShare('{{ url_for('reseau.detail', video_id=video.id, _external=True) }}')">
+                    <div class="ic"><i class="fas fa-share"></i></div>
+                    <span class="num">Partager</span>
+                </button>
+            </div>
+
+            {% if loop.first %}
+            <div class="tt-hint"><i class="fas fa-chevron-up"></i> Glissez vers le haut</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="tt-dots" id="ttDots">
+    {% for video in videos %}
+    <div class="d {% if loop.first %}on{% endif %}" onclick="ttScroll({{ loop.index0 }})"></div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="tt-empty">
+    <i class="fas fa-play-circle"></i>
+    <h2>Aucune vidéo</h2>
+    <p>Les contenus apparaîtront ici une fois publiés.</p>
+</div>
+{% endif %}
+
+<nav class="tt-bottom">
+    <a href="{{ url_for('reseau.index') }}" class="tt-bnav active"><i class="fas fa-home"></i><span>Accueil</span></a>
+    <a href="#" class="tt-bnav"><i class="fas fa-users"></i><span>Ami(e)s</span></a>
+    {% if current_user.is_authenticated and current_user.can_publish() %}
+    <a href="{{ url_for('reseau.publish') }}" class="tt-bnav-create"><i class="fas fa-plus"></i></a>
+    {% else %}
+    <button class="tt-bnav-create" style="opacity:0.3;cursor:default;"><i class="fas fa-plus"></i></button>
+    {% endif %}
+    <a href="#" class="tt-bnav"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('reseau.profile', user_id=current_user.id) }}" class="tt-bnav"><i class="fas fa-user"></i><span>Profil</span></a>
+    {% else %}
+    <a href="{{ url_for('auth.login') }}" class="tt-bnav"><i class="fas fa-user"></i><span>Profil</span></a>
+    {% endif %}
+</nav>
+
+<script>
+function ttPlay(id, btn) {
+    var ifr = document.getElementById('ifr-' + id);
+    if (ifr.src.indexOf('autoplay=1') === -1) {
+        ifr.src += (ifr.src.indexOf('?') > -1 ? '&' : '?') + 'autoplay=1';
+    }
+    btn.style.display = 'none';
+}
+function ttLike(id, el) {
+    fetch('/reseaux/' + id + '/like', {
+        method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    }).then(r => r.json()).then(data => {
+        document.getElementById('lkc-' + id).textContent = data.count;
+        var ic = document.getElementById('lik-' + id);
+        if (data.liked) ic.classList.add('liked');
+        else ic.classList.remove('liked');
+    });
+}
+function ttBookmark(el) {
+    var ic = el.querySelector('.ic');
+    ic.style.background = 'rgba(250,204,21,0.8)';
+    ic.style.borderColor = 'transparent';
+}
+function ttShare(url) {
+    if (navigator.share) navigator.share({ url: url });
+    else { navigator.clipboard.writeText(url); alert('Lien copié !'); }
+}
+function ttScroll(i) {
+    var s = document.querySelectorAll('.tt-slide');
+    if (s[i]) s[i].scrollIntoView({ behavior: 'smooth' });
+}
+var feed = document.getElementById('ttFeed');
+var dots = document.querySelectorAll('.tt-dots .d');
+if (feed && dots.length) {
+    feed.addEventListener('scroll', function() {
+        var idx = Math.round(feed.scrollTop / feed.clientHeight);
+        dots.forEach(function(d, i) { d.classList.toggle('on', i === idx); });
+    });
+}
+</script>
+{% endblock %}

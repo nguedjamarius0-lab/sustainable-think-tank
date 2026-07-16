@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Contact - Tendereo Sustainability Institute{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-envelope"></i> Contact</h1>
+        <p>Nous sommes à votre écoute</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="founders-grid">
+                <div class="founder-card">
+                    <div class="founder-photo-wrapper">
+                        <img src="{{ url_for('static', filename='images/founders/fonder1.png') }}" alt="Fondateur 1" class="founder-photo" id="founder1-photo">
+                        <div class="founder-photo-placeholder" id="founder1-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="founder-info">
+                        <h3 class="founder-name">Fondateur</h3>
+                        <p class="founder-role">Co-fondateur</p>
+                        <a href="https://wa.me/237651443798" target="_blank" class="founder-whatsapp-btn">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>+237 651 443 798</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="founder-card">
+                    <div class="founder-photo-wrapper">
+                        <img src="{{ url_for('static', filename='images/founders/fonder2.png') }}" alt="Fondateur 2" class="founder-photo" id="founder2-photo">
+                        <div class="founder-photo-placeholder" id="founder2-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="founder-info">
+                        <h3 class="founder-name">Fondateur</h3>
+                        <p class="founder-role">Co-fondateur</p>
+                        <a href="https://wa.me/237652758396" target="_blank" class="founder-whatsapp-btn">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>+237 652 758 396</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">Suivez-nous</h2>
+                <div style="display: flex; justify-content: center; gap: 1rem;">
+                    <a href="#" class="social-link-btn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-link-btn"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#" class="social-link-btn"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div style="background: var(--light-bg); padding: 2rem; border-radius: 12px; text-align: center;">
+                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">
+                    <i class="fas fa-map-marker-alt" style="color: var(--primary-teal);"></i> Notre siège
+                </h3>
+                <p style="color: var(--text-muted);">Yaoundé, Cameroun</p>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+document.querySelectorAll('.founder-photo').forEach(function(img) {
+    var baseSrc = img.getAttribute('src').replace(/\.[^.]+$/, '');
+    var exts = ['png', 'jpg', 'jpeg'];
+    var i = 0;
+    function tryNext() {
+        if (i >= exts.length) return;
+        img.src = baseSrc + '.' + exts[i];
+        img.onerror = function() { i++; tryNext(); };
+        img.onload = function() { this.style.display = 'block'; this.nextElementSibling.style.display = 'none'; };
+        i++;
+    }
+    tryNext();
+});
+</script>
+{% endblock %}

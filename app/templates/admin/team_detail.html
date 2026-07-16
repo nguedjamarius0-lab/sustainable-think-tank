@@ -1,0 +1,81 @@
+{% extends "admin/dashboard.html" %}
+{% block title %}{{ team.name }} - Admin Tendereo{% endblock %}
+{% block content %}
+<div class="admin-layout">
+    {% include "admin/_sidebar.html" %}
+    <main class="admin-main">
+        <div class="admin-header">
+            <div>
+                <a href="{{ url_for('admin.pending_teams') }}" style="font-size: 0.85rem; color: var(--primary-teal);"><i class="fas fa-arrow-left"></i> Retour aux équipes</a>
+                <h1 style="margin-top: 0.5rem;"><i class="fas fa-users"></i> {{ team.name }}</h1>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                {% if team.status == 'pending' %}
+                <form action="{{ url_for('admin.validate_team', team_id=team.id, action='validate') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem;"><i class="fas fa-check"></i> Valider</button>
+                </form>
+                <form action="{{ url_for('admin.validate_team', team_id=team.id, action='reject') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn" style="padding: 0.5rem 1rem; background: #f59e0b; color: #fff;" onclick="return confirm('Rejeter cette équipe ?')"><i class="fas fa-times"></i> Rejeter</button>
+                </form>
+                {% endif %}
+                <form action="{{ url_for('admin.research_team_delete', team_id=team.id) }}" method="POST" onsubmit="return confirm('Supprimer cette équipe ?')">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn" style="padding: 0.5rem 1rem; background: #ef4444; color: #fff;"><i class="fas fa-trash"></i> Supprimer</button>
+                </form>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div class="admin-card">
+                <h3><i class="fas fa-info-circle" style="color: var(--primary-teal);"></i> Informations</h3>
+                <table style="width: 100%; font-size: 0.9rem;">
+                    <tr><td style="padding: 0.5rem 0; color: var(--text-muted); width: 120px;">Nom</td><td><strong>{{ team.name }}</strong></td></tr>
+                    <tr><td style="padding: 0.5rem 0; color: var(--text-muted);">Thème</td><td>{{ team.theme }}</td></tr>
+                    <tr><td style="padding: 0.5rem 0; color: var(--text-muted);">Statut</td><td>
+                        {% if team.status == 'pending' %}<span class="badge" style="background: #f59e0b; color: #fff;">En attente</span>
+                        {% elif team.status == 'validated' %}<span class="badge" style="background: var(--primary-green); color: #fff;">Validée</span>
+                        {% else %}<span class="badge" style="background: #ef4444; color: #fff;">Rejetée</span>{% endif %}
+                    </td></tr>
+                    <tr><td style="padding: 0.5rem 0; color: var(--text-muted);">Créée le</td><td>{{ team.created_at.strftime('%d/%m/%Y') }}</td></tr>
+                    <tr><td style="padding: 0.5rem 0; color: var(--text-muted);">Créée par</td><td>{{ team.creator.name if team.creator else 'N/A' }}</td></tr>
+                    {% if team.validated_by %}
+                    <tr><td style="padding: 0.5rem 0; color: var(--text-muted);">Validée par</td><td>{{ team.validator.name if team.validator else 'N/A' }}</td></tr>
+                    {% endif %}
+                </table>
+                {% if team.description %}
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">Description</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">{{ team.description }}</p>
+                </div>
+                {% endif %}
+                {% if team.vision %}
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;"><i class="fas fa-lightbulb" style="color: var(--primary-teal);"></i> Vision et idéologie</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); background: var(--light-bg); padding: 1rem; border-radius: 8px;">{{ team.vision }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="admin-card">
+                <h3><i class="fas fa-users" style="color: var(--primary-green);"></i> Membres ({{ members|length }})</h3>
+                {% for member in members %}
+                <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+                    <strong>{{ member.name }}</strong>
+                    <span class="badge badge-user" style="margin-left: 0.5rem;">{{ member.role }}</span>
+                    {% if member.whatsapp %}
+                    <br><small style="color: var(--text-muted);"><i class="fab fa-whatsapp" style="color: #25D366;"></i> {{ member.whatsapp }}</small>
+                    {% endif %}
+                    {% if member.bio %}
+                    <br><small style="color: var(--text-muted);">{{ member.bio[:150] }}{% if member.bio|length > 150 %}...{% endif %}</small>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p style="color: var(--text-muted); padding: 1rem 0;">Aucun membre.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

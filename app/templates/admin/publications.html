@@ -1,0 +1,40 @@
+{% extends "admin/dashboard.html" %}
+{% block title %}Publications - Admin Tendereo{% endblock %}
+{% block content %}
+<div class="admin-layout">
+    {% include "admin/_sidebar.html" %}
+    <main class="admin-main">
+        <div class="admin-header">
+            <h1><i class="fas fa-book"></i> Publications</h1>
+            <a href="{{ url_for('admin.publication_create') }}" class="btn btn-primary" style="padding: 0.5rem 1.2rem;"><i class="fas fa-plus"></i> Ajouter</a>
+        </div>
+        <div class="admin-card" style="overflow-x: auto;">
+            <table class="admin-table">
+                <thead>
+                    <tr><th>Titre</th><th>Catégorie</th><th>Thème</th><th>Auteur</th><th>À la une</th><th>Date</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for pub in publications %}
+                    <tr>
+                        <td><strong>{{ pub.title_fr[:60] }}{% if pub.title_fr|length > 60 %}...{% endif %}</strong></td>
+                        <td><span class="badge badge-user">{{ pub.category }}</span></td>
+                        <td>{{ pub.theme }}</td>
+                        <td>{{ pub.author_name }}</td>
+                        <td>{{ 'Oui' if pub.is_featured else 'Non' }}</td>
+                        <td>{{ pub.published_at.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.publication_edit', pub_id=pub.id) }}" class="btn btn-outline" style="padding: 0.3rem 0.7rem; font-size: 0.8rem;"><i class="fas fa-edit"></i></a>
+                            <form action="{{ url_for('admin.publication_delete', pub_id=pub.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Supprimer cette publication ?')">
+                                <button type="submit" class="btn" style="padding: 0.3rem 0.7rem; font-size: 0.8rem; background: #ef4444; color: #fff; border: none;"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">Aucune publication.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+{% endblock %}

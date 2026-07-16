@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}{{ publication.title_fr }} - Tendereo{% endblock %}
+
+{% block content %}
+<div class="breadcrumb-section">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="{{ url_for('main.index') }}">Accueil</a>
+            <span>/</span>
+            <a href="{{ url_for('publications.list_publications') }}">Publications</a>
+            <span>/</span>
+            <span>{{ publication.title_fr[:60] }}{% if publication.title_fr|length > 60 %}...{% endif %}</span>
+        </div>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container" style="max-width: 900px;">
+        <div style="margin-bottom: 2rem;">
+            <span class="card-category">{{ publication.category.replace('_', ' ').title() }}</span>
+            <span style="margin-left: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(27,94,59,0.1); color: var(--primary-green); border-radius: 20px; font-size: 0.75rem; font-weight: 600;">{{ publication.theme.replace('_', ' ').title() }}</span>
+        </div>
+
+        <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.3;">{{ publication.title_fr }}</h1>
+
+        <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-teal); color: #fff; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <strong>{{ publication.author_name }}</strong>
+                    {% if publication.author_bio %}
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">{{ publication.author_bio[:80] }}{% if publication.author_bio|length > 80 %}...{% endif %}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <span style="color: var(--text-muted); font-size: 0.9rem;"><i class="fas fa-calendar"></i> {{ publication.published_at.strftime('%d %B %Y') }}</span>
+        </div>
+
+        {% if publication.cover_image %}
+        <img src="{{ url_for('static', filename='uploads/' + publication.cover_image) }}" alt="{{ publication.title_fr }}" style="width: 100%; border-radius: 12px; margin-bottom: 2rem;">
+        {% endif %}
+
+        <div style="background: var(--light-bg); padding: 2rem; border-radius: 12px; border-left: 4px solid var(--primary-teal); margin-bottom: 2rem;">
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--primary-teal);"><i class="fas fa-file-alt"></i> Résumé exécutif</h3>
+            <p style="line-height: 1.8;">{{ publication.executive_summary_fr or publication.summary_fr }}</p>
+        </div>
+
+        <div style="line-height: 1.8; font-size: 1.05rem; margin-bottom: 3rem;">
+            {{ publication.summary_fr }}
+        </div>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem;">
+            {% if publication.pdf_file %}
+            <a href="{{ url_for('static', filename='uploads/' + publication.pdf_file) }}" class="btn btn-primary" target="_blank">
+                <i class="fas fa-file-pdf"></i> Télécharger le PDF
+            </a>
+            {% endif %}
+            {% if publication.slides_file %}
+            <a href="{{ url_for('static', filename='uploads/' + publication.slides_file) }}" class="btn btn-outline" target="_blank">
+                <i class="fas fa-file-powerpoint"></i> Voir les slides
+            </a>
+            {% endif %}
+        </div>
+
+        {% if publication.citation_apa %}
+        <div style="background: var(--light-bg); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem;">
+            <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem;"><i class="fas fa-quote-left" style="color: var(--primary-teal);"></i> Citation (APA)</h4>
+            <p style="font-size: 0.9rem; font-style: italic; color: var(--text-muted);">{{ publication.citation_apa }}</p>
+            <button onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent); this.textContent='Copié !'; setTimeout(() => this.textContent='Copier', 1500);" class="btn btn-outline" style="margin-top: 0.5rem; padding: 0.4rem 1rem; font-size: 0.8rem;">
+                <i class="fas fa-copy"></i> Copier
+            </button>
+        </div>
+        {% endif %}
+
+        {% if related %}
+        <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem;">Publications similaires</h3>
+        <div class="grid-3">
+            {% for pub in related %}
+            <div class="card">
+                <div class="card-body">
+                    <span class="card-category">{{ pub.category.replace('_', ' ').title() }}</span>
+                    <h3 class="card-title">{{ pub.title_fr }}</h3>
+                    <p class="card-meta">{{ pub.author_name }} &middot; {{ pub.published_at.strftime('%d %b %Y') }}</p>
+                    <a href="{{ url_for('publications.detail', slug=pub.slug) }}" class="card-link">Lire <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

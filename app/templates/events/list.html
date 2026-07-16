@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Événements - Tendereo Sustainability Institute{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-calendar-alt"></i> Événements</h1>
+        <p>Conférences, auditions, colloques et séminaires</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="tabs">
+            <a href="?tab=upcoming" class="tab-btn {% if current_tab == 'upcoming' %}active{% endif %}">
+                <i class="fas fa-calendar-plus"></i> À venir
+            </a>
+            <a href="?tab=past" class="tab-btn {% if current_tab == 'past' %}active{% endif %}">
+                <i class="fas fa-history"></i> Événements passés
+            </a>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            {% for event in events %}
+            <div class="event-card">
+                <div class="event-date-box">
+                    <div class="day">{{ event.start_date.strftime('%d') }}</div>
+                    <div class="month">{{ event.start_date.strftime('%b') }}</div>
+                </div>
+                <div class="event-info" style="flex: 1;">
+                    <span class="event-type-badge">{{ event.event_type.title() }}</span>
+                    <h3><a href="{{ url_for('events.detail', slug=event.slug) }}">{{ event.title_fr }}</a></h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 0;">
+                        <i class="fas fa-map-marker-alt"></i> {{ event.location or 'En ligne' }} &middot;
+                        <i class="fas fa-clock"></i> {{ event.start_date.strftime('%Hh%M') }}
+                        {% if event.end_date %} - {{ event.end_date.strftime('%Hh%M') }}{% endif %}
+                    </p>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">{{ event.description_fr[:200] }}{% if event.description_fr|length > 200 %}...{% endif %}</p>
+                    <a href="{{ url_for('events.detail', slug=event.slug) }}" class="card-link" style="margin-top: 0.5rem;">
+                        {% if current_tab == 'past' %}Voir le replay{% else %}Détails & inscription{% endif %} <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 4rem; color: var(--text-muted);">
+                <i class="fas fa-calendar" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                <h3>Aucun événement</h3>
+                <p>Aucun événement n'a été planifié pour le moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

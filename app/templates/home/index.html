@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Tendereo Sustainability Institute - Think tank durable en Afrique{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <h1>Tendereo Sustainability Institute</h1>
+        <p class="slogan">Informer, Influencer, Impacter — Pour un avenir durable en Afrique</p>
+        <a href="{{ url_for('publications.list_publications') }}" class="btn btn-primary" style="margin-right: 1rem;">
+            <i class="fas fa-book-open"></i> Nos publications
+        </a>
+        <a href="{{ url_for('contact.index') }}" class="btn btn-outline" style="color: #fff; border-color: rgba(255,255,255,0.3);">
+            <i class="fas fa-envelope"></i> Nous contacter
+        </a>
+
+        <div class="video-wrapper" style="display:flex; align-items:center; justify-content:center; flex-direction:column; gap:1rem; background:rgba(255,255,255,0.08); border:2px dashed rgba(255,255,255,0.25);">
+            <i class="fas fa-video" style="font-size:2.5rem; opacity:0.5;"></i>
+            <p style="opacity:0.6; font-size:0.95rem;">Vidéo de présentation à venir</p>
+        </div>
+    </div>
+</section>
+
+<section class="newsletter-bar">
+    <div class="container">
+        <p><i class="fas fa-paper-plane"></i> Restez informé de nos travaux</p>
+        <form action="{{ url_for('contact.newsletter') }}" method="POST" style="display: flex; gap: 0.5rem;">
+            {{ newsletter_form.hidden_tag() }}
+            {{ newsletter_form.email(placeholder="Votre adresse email", required=true) }}
+            <button type="submit">S'inscrire</button>
+        </form>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h2 class="section-title">À la une</h2>
+                <p class="section-subtitle" style="margin-bottom: 0;">Nos dernières publications mises en avant</p>
+            </div>
+            <a href="{{ url_for('publications.list_publications') }}" class="btn btn-outline">Voir toutes les publications <i class="fas fa-arrow-right"></i></a>
+        </div>
+
+        <div class="grid-3">
+            {% for pub in publications %}
+            <div class="card">
+                {% if pub.cover_image %}
+                <img src="{{ url_for('static', filename='uploads/' + pub.cover_image) }}" alt="{{ pub.title_fr }}" class="card-img-top">
+                {% else %}
+                <div class="card-img-top" style="display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); font-size: 2rem;">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <span class="card-category">{{ pub.category.replace('_', ' ').title() }}</span>
+                    <h3 class="card-title">{{ pub.title_fr }}</h3>
+                    <p class="card-meta"><i class="fas fa-user"></i> {{ pub.author_name }} &middot; {{ pub.published_at.strftime('%d %b %Y') }}</p>
+                    <p class="card-text">{{ pub.summary_fr[:150] }}{% if pub.summary_fr|length > 150 %}...{% endif %}</p>
+                    <a href="{{ url_for('publications.detail', slug=pub.slug) }}" class="card-link">Lire <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            {% else %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
+                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                <p>Aucune publication pour le moment. Revenez bientôt !</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% if upcoming_event %}
+<section class="section" style="background: var(--light-bg);">
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h2 class="section-title"><i class="fas fa-calendar-alt" style="color: var(--primary-teal);"></i> Prochain événement</h2>
+                <p class="section-subtitle" style="margin-bottom: 0;">Ne manquez pas notre prochain rendez-vous</p>
+            </div>
+            <a href="{{ url_for('events.list_events') }}" class="btn btn-outline">Voir l'agenda <i class="fas fa-arrow-right"></i></a>
+        </div>
+
+        <div class="event-card" style="max-width: 800px;">
+            <div class="event-date-box">
+                <div class="day">{{ upcoming_event.start_date.strftime('%d') }}</div>
+                <div class="month">{{ upcoming_event.start_date.strftime('%b') }}</div>
+            </div>
+            <div class="event-info">
+                <span class="event-type-badge">{{ upcoming_event.event_type.title() }}</span>
+                <h3>{{ upcoming_event.title_fr }}</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                    <i class="fas fa-map-marker-alt"></i> {{ upcoming_event.location or 'En ligne' }} &middot;
+                    <i class="fas fa-clock"></i> {{ upcoming_event.start_date.strftime('%Hh%M') }}
+                </p>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">{{ upcoming_event.description_fr[:200] }}{% if upcoming_event.description_fr|length > 200 %}...{% endif %}</p>
+                <a href="{{ url_for('events.detail', slug=upcoming_event.slug) }}" class="card-link" style="margin-top: 0.75rem;">En savoir plus <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Fil d'actualité</h2>
+        <p class="section-subtitle">Brèves, réactions et citations de nos experts</p>
+
+        <div style="max-width: 800px;">
+            {% for item in news %}
+            <div class="news-item">
+                <p class="time"><i class="fas fa-clock"></i> {{ item.created_at.strftime('%d %B %Y') }}</p>
+                <h4>{{ item.title_fr }}</h4>
+                <p>{{ item.content_fr[:200] }}{% if item.content_fr|length > 200 %}...{% endif %}</p>
+            </div>
+            {% else %}
+            <p style="color: var(--text-muted); padding: 2rem; text-align: center;">
+                <i class="fas fa-newspaper" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+                Aucune actualité pour le moment.
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background: var(--light-bg);">
+    <div class="container">
+        <div class="about-grid">
+            <div>
+                <h2 class="section-title">À propos</h2>
+                <p style="font-size: 1.05rem; line-height: 1.8; margin-bottom: 1.5rem;">
+                    Le <strong>Tendereo Sustainability Institute</strong> est un think tank indépendant engagé pour la recherche et l'innovation en matière de développement durable en Afrique. Nous combinons expertise académique et pragmatisme politique pour éclairer les décisions publiques.
+                </p>
+                <div class="about-values">
+                    <div class="value-card">
+                        <h4><i class="fas fa-bullseye"></i> Mission</h4>
+                        <p>Produire des analyses indépendantes et rigoureuses pour orienter les politiques publiques vers la durabilité.</p>
+                    </div>
+                    <div class="value-card">
+                        <h4><i class="fas fa-eye"></i> Vision</h4>
+                        <p>Devenir le référentiel africain en matière de recherche politique et de conseil stratégique durable.</p>
+                    </div>
+                    <div class="value-card">
+                        <h4><i class="fas fa-handshake"></i> Valeurs</h4>
+                        <p>Indépendance, rigueur scientifique, transparence et engagement envers les communautés africaines.</p>
+                    </div>
+                    <div class="value-card">
+                        <h4><i class="fas fa-shield-alt"></i> Indépendance</h4>
+                        <p>Indépendance financière et politique garantie, sans affiliation partisane ou commerciale.</p>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="background: linear-gradient(135deg, var(--primary-green), var(--primary-teal)); border-radius: 16px; padding: 3rem; color: #fff; text-align: center;">
+                    <i class="fas fa-file-pdf" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Rapport d'activité 2025</h3>
+                    <p style="opacity: 0.85; margin-bottom: 1.5rem;">Téléchargez notre rapport annuel pour découvrir l'ensemble de nos actions et résultats.</p>
+                    <a href="#" class="btn" style="background: #fff; color: var(--primary-green);">
+                        <i class="fas fa-download"></i> Télécharger le PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if directors %}
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Nos Directeurs</h2>
+        <p class="section-subtitle">L'équipe de direction qui guide notre mission</p>
+
+        <div class="grid-4">
+            {% for member in directors %}
+            <div class="team-card">
+                <div class="team-photo">
+                    {% if member.photo %}
+                    <img src="{{ url_for('static', filename='uploads/' + member.photo) }}" alt="{{ member.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                    <i class="fas fa-user"></i>
+                    {% endif %}
+                </div>
+                <h3>{{ member.name }}</h3>
+                <p class="role">{{ member.role_fr }}</p>
+                <p class="bio">{{ member.bio_fr[:120] }}{% if member.bio_fr and member.bio_fr|length > 120 %}...{% endif %}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="donate-banner">
+    <div class="container">
+        <h2>Soutenez notre mission</h2>
+        <p>Votre contribution nous permet de produire des recherches indépendantes et d'influencer positivement les politiques publiques en Afrique.</p>
+        <a href="{{ donation_url | default('#') }}" class="btn-donate-lg" target="_blank">
+            <i class="fas fa-heart"></i> Faire un don
+        </a>
+    </div>
+</section>
+{% endblock %}

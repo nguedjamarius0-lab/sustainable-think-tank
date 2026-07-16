@@ -1,0 +1,89 @@
+{% extends "admin/dashboard.html" %}
+{% block title %}{{ title }} - Admin Tendereo{% endblock %}
+{% block content %}
+<div class="admin-layout">
+    {% include "admin/_sidebar.html" %}
+    <main class="admin-main">
+        <div class="admin-header">
+            <div>
+                <a href="{{ url_for('admin.events') }}" style="font-size: 0.85rem; color: var(--primary-teal);"><i class="fas fa-arrow-left"></i> Retour aux événements</a>
+                <h1 style="margin-top: 0.5rem;"><i class="fas fa-calendar"></i> {{ title }}</h1>
+            </div>
+        </div>
+        <div class="admin-card" style="max-width: 900px;">
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label><strong>{{ form.title_fr.label.text }} *</strong></label>
+                        {{ form.title_fr(class="form-control") }}
+                        {% for e in form.title_fr.errors %}<span style="color: var(--error); font-size: 0.8rem;">{{ e }}</span>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <label><strong>{{ form.title_en.label.text }} *</strong></label>
+                        {{ form.title_en(class="form-control") }}
+                        {% for e in form.title_en.errors %}<span style="color: var(--error); font-size: 0.8rem;">{{ e }}</span>{% endfor %}
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label><strong>{{ form.event_type.label.text }} *</strong></label>
+                        {{ form.event_type(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        <label><strong>{{ form.location.label.text }}</strong></label>
+                        {{ form.location(class="form-control", placeholder="Lieu de l'événement") }}
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label><strong>{{ form.start_date.label.text }} *</strong></label>
+                        {{ form.start_date(class="form-control") }}
+                        {% for e in form.start_date.errors %}<span style="color: var(--error); font-size: 0.8rem;">{{ e }}</span>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <label><strong>{{ form.end_date.label.text }}</strong></label>
+                        {{ form.end_date(class="form-control") }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><strong>{{ form.description_fr.label.text }} *</strong></label>
+                    {{ form.description_fr(class="form-control", rows=5) }}
+                    {% for e in form.description_fr.errors %}<span style="color: var(--error); font-size: 0.8rem;">{{ e }}</span>{% endfor %}
+                </div>
+                <div class="form-group">
+                    <label><strong>{{ form.description_en.label.text }} *</strong></label>
+                    {{ form.description_en(class="form-control", rows=5) }}
+                    {% for e in form.description_en.errors %}<span style="color: var(--error); font-size: 0.8rem;">{{ e }}</span>{% endfor %}
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label><strong>{{ form.cover_image.label.text }}</strong></label>
+                        {{ form.cover_image(class="form-control") }}
+                        {% if event and event.cover_image %}<small style="color: var(--text-muted);">Actuel: {{ event.cover_image.split('/')[-1] }}</small>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label><strong>{{ form.report_file.label.text }}</strong></label>
+                        {{ form.report_file(class="form-control") }}
+                        {% if event and event.report_file %}<small style="color: var(--text-muted);">Actuel: {{ event.report_file.split('/')[-1] }}</small>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label><strong>{{ form.presentation_file.label.text }}</strong></label>
+                        {{ form.presentation_file(class="form-control") }}
+                        {% if event and event.presentation_file %}<small style="color: var(--text-muted);">Actuel: {{ event.presentation_file.split('/')[-1] }}</small>{% endif %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                        {{ form.is_published() }} <strong>{{ form.is_published.label.text }}</strong>
+                    </label>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" style="padding: 0.7rem 2rem;"><i class="fas fa-save"></i> Enregistrer</button>
+                    <a href="{{ url_for('admin.events') }}" class="btn btn-outline" style="padding: 0.7rem 2rem;">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

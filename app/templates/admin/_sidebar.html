@@ -1,0 +1,51 @@
+<aside class="admin-sidebar">
+    <div class="admin-sidebar-header">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Tendereo" style="height: 35px;">
+        <span>Admin</span>
+    </div>
+    <nav class="admin-nav">
+        <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+            <i class="fas fa-tachometer-alt"></i> Tableau de bord
+        </a>
+        <a href="{{ url_for('admin.users_list') }}" class="{% if 'user' in request.endpoint|default('', true) %}active{% endif %}">
+            <i class="fas fa-users"></i> Utilisateurs
+        </a>
+        <a href="{{ url_for('admin.publications') }}" class="{% if 'publication' in request.endpoint|default('', true) %}active{% endif %}">
+            <i class="fas fa-book"></i> Publications
+        </a>
+        <a href="{{ url_for('admin.events') }}" class="{% if 'event' in request.endpoint|default('', true) and 'pending' not in request.endpoint %}active{% endif %}">
+            <i class="fas fa-calendar"></i> Événements
+        </a>
+        <a href="{{ url_for('admin.team') }}" class="{% if request.endpoint == 'admin.team' %}active{% endif %}">
+            <i class="fas fa-user-tie"></i> Équipe
+        </a>
+        <a href="{{ url_for('admin.pending_teams') }}" class="{% if 'pending_team' in request.endpoint|default('', true) %}active{% endif %}">
+            <i class="fas fa-users-cog"></i> Équipes à valider
+        </a>
+        <a href="{{ url_for('admin.videos') }}" class="{% if request.endpoint == 'admin.videos' %}active{% endif %}">
+            <i class="fas fa-video"></i> Vidéos
+        </a>
+        <a href="{{ url_for('admin.partners') }}" class="{% if 'partner' in request.endpoint|default('', true) %}active{% endif %}">
+            <i class="fas fa-handshake"></i> Partenaires
+        </a>
+        <a href="{{ url_for('admin.press') }}" class="{% if 'press' in request.endpoint|default('', true) %}active{% endif %}">
+            <i class="fas fa-newspaper"></i> Presse
+        </a>
+        <a href="{{ url_for('admin.news') }}" class="{% if 'news' in request.endpoint|default('', true) %}active{% endif %}">
+            <i class="fas fa-bolt"></i> Actualités
+        </a>
+        <a href="{{ url_for('admin.reports') }}" class="{% if 'report' in request.endpoint|default('', true) %}active{% endif %}">
+            <i class="fas fa-file-pdf"></i> Rapports
+        </a>
+        <a href="{{ url_for('admin.messages') }}" class="{% if request.endpoint == 'admin.messages' %}active{% endif %}">
+            <i class="fas fa-envelope"></i> Messages
+        </a>
+        <a href="{{ url_for('admin.applications') }}" class="{% if request.endpoint == 'admin.applications' %}active{% endif %}">
+            <i class="fas fa-file-alt"></i> Candidatures
+        </a>
+    </nav>
+    <div class="admin-sidebar-footer">
+        <a href="{{ url_for('main.index') }}"><i class="fas fa-globe"></i> Voir le site</a>
+        <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+    </div>
+</aside>

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Équipes en attente - Admin Tendereo{% endblock %}
+{% block content %}
+<div class="admin-layout">
+    {% include "admin/_sidebar.html" %}
+    <div class="admin-main">
+        <div class="admin-header">
+            <h1><i class="fas fa-users-cog"></i> Équipes en attente de validation</h1>
+        </div>
+
+        <div class="admin-card">
+            {% if teams %}
+            {% for team in teams %}
+            <div style="padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <h3 style="font-size: 1.1rem; font-weight: 700;">{{ team.name }}</h3>
+                        <p style="color: var(--primary-teal); font-size: 0.85rem; margin-bottom: 0.5rem;">{{ team.theme }}</p>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">{{ team.description[:200] }}{% if team.description and team.description|length > 200 %}...{% endif %}</p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                            Créée le {{ team.created_at.strftime('%d/%m/%Y') }} par {{ team.creator.name if team.creator else 'N/A' }}
+                            &middot; {{ team.members.count() }} membre(s)
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
+                        <a href="{{ url_for('admin.team_detail', team_id=team.id) }}" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                            <i class="fas fa-info-circle"></i> Détail
+                        </a>
+                        <form action="{{ url_for('admin.validate_team', team_id=team.id, action='validate') }}" method="POST" style="display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-green" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                                <i class="fas fa-check"></i> Valider
+                            </button>
+                        </form>
+                        <form action="{{ url_for('admin.validate_team', team_id=team.id, action='reject') }}" method="POST" style="display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: #f59e0b; color: #fff; border: none;">
+                                <i class="fas fa-times"></i> Rejeter
+                            </button>
+                        </form>
+                        <form action="{{ url_for('admin.research_team_delete', team_id=team.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Supprimer cette équipe ?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: #ef4444; color: #fff; border: none;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                <i class="fas fa-check-circle" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; color: var(--primary-green);"></i>
+                Aucune équipe en attente de validation.
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

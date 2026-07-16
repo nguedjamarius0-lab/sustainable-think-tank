@@ -1,0 +1,42 @@
+{% extends "admin/dashboard.html" %}
+{% block title %}{{ title }} - Admin Tendereo{% endblock %}
+{% block content %}
+<div class="admin-layout">
+    {% include "admin/_sidebar.html" %}
+    <main class="admin-main">
+        <div class="admin-header">
+            <div>
+                <a href="{{ url_for('admin.videos') }}" style="font-size: 0.85rem; color: var(--primary-teal);"><i class="fas fa-arrow-left"></i> Retour aux vidéos</a>
+                <h1 style="margin-top: 0.5rem;"><i class="fas fa-video"></i> {{ title }}</h1>
+            </div>
+        </div>
+        <div class="admin-card" style="max-width: 700px;">
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    <label><strong>{{ form.title.label.text }} *</strong></label>
+                    {{ form.title(class="form-control") }}
+                    {% for e in form.title.errors %}<span style="color: var(--error); font-size: 0.8rem;">{{ e }}</span>{% endfor %}
+                </div>
+                <div class="form-group">
+                    <label><strong>{{ form.description.label.text }}</strong></label>
+                    {{ form.description(class="form-control", rows=4) }}
+                </div>
+                <div class="form-group">
+                    <label><strong>{{ form.video_url.label.text }} *</strong></label>
+                    {{ form.video_url(class="form-control", placeholder="https://youtube.com/watch?v=... ou https://vimeo.com/...") }}
+                    {% for e in form.video_url.errors %}<span style="color: var(--error); font-size: 0.8rem;">{{ e }}</span>{% endfor %}
+                </div>
+                <div class="form-group">
+                    <label><strong>{{ form.thumbnail_url.label.text }}</strong></label>
+                    {{ form.thumbnail_url(class="form-control", placeholder="URL de la miniature (optionnel)") }}
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" style="padding: 0.7rem 2rem;"><i class="fas fa-save"></i> Enregistrer</button>
+                    <a href="{{ url_for('admin.videos') }}" class="btn btn-outline" style="padding: 0.7rem 2rem;">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

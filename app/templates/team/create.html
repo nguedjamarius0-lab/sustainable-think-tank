@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block title %}Créer une équipe - Tendereo{% endblock %}
+{% block content %}
+<section class="section" style="background: var(--light-bg);">
+    <div class="container" style="max-width: 700px;">
+        <h1 style="text-align: center; font-size: 1.5rem; margin-bottom: 2rem;">
+            <i class="fas fa-users-cog" style="color: var(--primary-teal);"></i> Créer une équipe de recherche
+        </h1>
+
+        <div class="wizard-steps">
+            <div class="wizard-step {% if step >= 1 %}active{% endif %} {% if step > 1 %}completed{% endif %}">
+                <span>1</span> Infos
+            </div>
+            <div class="wizard-step {% if step >= 2 %}active{% endif %} {% if step > 2 %}completed{% endif %}">
+                <span>2</span> Taille
+            </div>
+            <div class="wizard-step {% if step >= 3 %}active{% endif %} {% if step > 3 %}completed{% endif %}">
+                <span>3</span> Membres
+            </div>
+            <div class="wizard-step {% if step >= 4 %}active{% endif %} {% if step > 4 %}completed{% endif %}">
+                <span>4</span> Charte
+            </div>
+            <div class="wizard-step {% if step >= 5 %}active{% endif %}">
+                <span>5</span> Fin
+            </div>
+        </div>
+
+        <div style="background: var(--white); border-radius: 16px; padding: 2rem; box-shadow: var(--shadow);">
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% if step == 1 %}
+                <h2 style="font-size: 1.2rem; margin-bottom: 1.5rem;">Informations générales</h2>
+                <div class="form-group">
+                    <label>Nom de l'équipe *</label>
+                    <input type="text" name="name" class="form-control" required value="{{ step1.get('name', '') }}" placeholder="Ex: Économie du Développement Durable">
+                </div>
+                <div class="form-group">
+                    <label>Thème de recherche *</label>
+                    <select name="theme" class="form-control" required>
+                        <option value="">Sélectionnez un thème</option>
+                        {% for t in themes %}
+                        <option value="{{ t }}" {% if step1.get('theme') == t %}selected{% endif %}>{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description de la mission</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="Décrivez l'objectif de votre équipe...">{{ step1.get('description', '') }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Vision et idéologie de l'équipe *</label>
+                    <textarea name="vision" class="form-control" rows="5" required placeholder="Décrivez la vision, les valeurs et l'idéologie de votre équipe. Dans quel domaine souhaitez-vous contribuer ? Quel est l'apport de votre équipe au développement d'une nation ?">{{ step1.get('vision', '') }}</textarea>
+                    <small style="color: var(--text-muted);">Minimum 20 caractères. Expliquez en quoi votre équipe peut apporter au développement durable.</small>
+                </div>
+                <input type="hidden" name="action" value="next">
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    Suivant <i class="fas fa-arrow-right"></i>
+                </button>
+
+                {% elif step == 2 %}
+                <h2 style="font-size: 1.2rem; margin-bottom: 1.5rem;">Taille de l'équipe</h2>
+                <div class="form-group">
+                    <label>Combien de personnes composent votre équipe ? *</label>
+                    <input type="number" name="member_count" class="form-control" min="5" max="20" required value="{{ step2.get('member_count', 5) }}">
+                    <small style="color: var(--text-muted);">Minimum 5 membres, maximum 20</small>
+                </div>
+                <input type="hidden" name="action" value="next">
+                <div style="display: flex; gap: 1rem;">
+                    <a href="{{ url_for('team.create', step=1) }}" class="btn btn-outline" style="flex: 1; justify-content: center;">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                    <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center;">
+                        Suivant <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                {% elif step == 3 %}
+                <h2 style="font-size: 1.2rem; margin-bottom: 1.5rem;">Membres de l'équipe ({{ step2.get('member_count', 1) }})</h2>
+                {% for i in range(1, step2.get('member_count', 1) + 1) %}
+                <div class="member-form-block">
+                    <h4 style="font-size: 0.95rem; color: var(--primary-teal); margin-bottom: 1rem;">
+                        <i class="fas fa-user"></i> Membre {{ i }}
+                    </h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>Nom *</label>
+                            <input type="text" name="member_{{ i }}_name" class="form-control" required
+                                   value="{{ step3[i-1].get('name', '') if step3|length >= i else '' }}" placeholder="Nom complet">
+                        </div>
+                        <div class="form-group">
+                            <label>Numéro WhatsApp</label>
+                            <input type="tel" name="member_{{ i }}_whatsapp" class="form-control"
+                                   value="{{ step3[i-1].get('whatsapp', '') if step3|length >= i else '' }}" placeholder="+237 6XX XXX XXX">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Rôle dans l'équipe *</label>
+                        <select name="member_{{ i }}_role" class="form-control" required>
+                            <option value="">Sélectionnez un rôle</option>
+                            {% for role_name, role_desc in roles %}
+                            <option value="{{ role_name }}" {% if step3|length >= i and step3[i-1].get('role') == role_name %}selected{% endif %}>
+                                {{ role_name }} — {{ role_desc }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Bio courte</label>
+                        <textarea name="member_{{ i }}_bio" class="form-control" rows="2" placeholder="Parcours, expertise...">{{ step3[i-1].get('bio', '') if step3|length >= i else '' }}</textarea>
+                    </div>
+                </div>
+                {% endfor %}
+                <input type="hidden" name="action" value="next">
+                <div style="display: flex; gap: 1rem;">
+                    <a href="{{ url_for('team.create', step=2) }}" class="btn btn-outline" style="flex: 1; justify-content: center;">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                    <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center;">
+                        Suivant <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                {% elif step == 4 %}
+                <h2 style="font-size: 1.2rem; margin-bottom: 1.5rem;"><i class="fas fa-file-contract" style="color: var(--primary-green);"></i> Charte Tendereo</h2>
+                <div class="charter-content">
+                    <h4>Charte du Tendereo Sustainability Institute</h4>
+                    <p><strong>Article 1 — Mission</strong><br>
+                    Le Tendereo Sustainability Institute a pour mission de produire des recherches indépendantes, rigoureuses et innovantes en matière de développement durable en Afrique.</p>
+                    <p><strong>Article 2 — Valeurs fondamentales</strong><br>
+                    Indépendance intellectuelle, rigueur scientifique, transparence, collaboration, engagement envers les communautés africaines.</p>
+                    <p><strong>Article 3 — Engagements des membres</strong><br>
+                    Chaque membre s'engage à : contribuer activement aux travaux de recherche, respecter l'éthique académique, maintenir la confidentialité des données sensibles, promouvoir l'image de l'institut.</p>
+                    <p><strong>Article 4 — Propriété intellectuelle</strong><br>
+                    Les publications et travaux réalisés sous l'égide de Tendereo restent la propriété de l'institut. Les membres conservent leurs droits d'auteurpersonnel.</p>
+                    <p><strong>Article 5 — Gouvernance</strong><br>
+                    L'équipe est placée sous la supervision d'un directeur élu par ses pairs. Les décisions majeures sont prises par consensus ou à la majorité simple.</p>
+                </div>
+                <a href="{{ url_for('static', filename='charter/tendereo_charter.pdf') }}" class="btn btn-outline" style="margin: 1rem 0;" download>
+                    <i class="fas fa-download"></i> Télécharger la charte (PDF)
+                </a>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" name="charter_accepted" value="yes"
+                               {% if step4.get('charter_accepted') %}checked{% endif %} required
+                               style="width: 18px; height: 18px;">
+                        <span>J'accepte les termes de la charte du Tendereo Sustainability Institute *</span>
+                    </label>
+                </div>
+                <input type="hidden" name="action" value="next">
+                <div style="display: flex; gap: 1rem;">
+                    <a href="{{ url_for('team.create', step=3) }}" class="btn btn-outline" style="flex: 1; justify-content: center;">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                    <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center;">
+                        Vérifier <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                {% elif step == 5 %}
+                <h2 style="font-size: 1.2rem; margin-bottom: 1.5rem;"><i class="fas fa-check-circle" style="color: var(--primary-green);"></i> Récapitulatif</h2>
+                <div class="recap-block">
+                    <h4>{{ step1.get('name', '') }}</h4>
+                    <p><strong>Thème :</strong> {{ step1.get('theme', '') }}</p>
+                    {% if step1.get('description') %}
+                    <p><strong>Description :</strong> {{ step1.get('description', '') }}</p>
+                    {% endif %}
+                    <p><strong>Vision et idéologie :</strong></p>
+                    <p style="background: var(--light-bg); padding: 1rem; border-radius: 8px; font-size: 0.9rem;">{{ step1.get('vision', '') }}</p>
+                    <p><strong>Membres :</strong> {{ step2.get('member_count', 5) }}</p>
+                </div>
+                <input type="hidden" name="action" value="submit">
+                <div style="display: flex; gap: 1rem;">
+                    <a href="{{ url_for('team.create', step=4) }}" class="btn btn-outline" style="flex: 1; justify-content: center;">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                    <button type="submit" class="btn btn-green" style="flex: 2; justify-content: center;">
+                        <i class="fas fa-paper-plane"></i> Soumettre pour validation
+                    </button>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

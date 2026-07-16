@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Publications - Tendereo Sustainability Institute{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-book-open"></i> Publications</h1>
+        <p>Rapports, policy briefs, notes d'analyse et tribunes</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <form method="GET" action="{{ url_for('publications.list_publications') }}">
+            <div class="filter-bar">
+                <div class="form-group">
+                    <label for="search"><i class="fas fa-search"></i> Recherche</label>
+                    <input type="text" id="search" name="search" class="form-control" placeholder="Titre, auteur, mot-clé..." value="{{ current_search }}">
+                </div>
+                <div class="form-group">
+                    <label for="category"><i class="fas fa-tag"></i> Catégorie</label>
+                    <select id="category" name="category" class="form-control">
+                        <option value="">Toutes les catégories</option>
+                        {% for key, label in categories.items() %}
+                        <option value="{{ key }}" {% if current_category == key %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="theme"><i class="fas fa-layer-group"></i> Thème</label>
+                    <select id="theme" name="theme" class="form-control">
+                        <option value="">Tous les thèmes</option>
+                        {% for key, label in themes.items() %}
+                        <option value="{{ key }}" {% if current_theme == key %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date_from"><i class="fas fa-calendar"></i> Date de début</label>
+                    <input type="date" id="date_from" name="date_from" class="form-control" value="{{ current_date_from }}">
+                </div>
+                <div class="form-group">
+                    <label for="date_to"><i class="fas fa-calendar"></i> Date de fin</label>
+                    <input type="date" id="date_to" name="date_to" class="form-control" value="{{ current_date_to }}">
+                </div>
+                <div class="form-group" style="flex: 0;">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filtrer</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="grid-3">
+            {% for pub in publications.items %}
+            <div class="card">
+                {% if pub.cover_image %}
+                <img src="{{ url_for('static', filename='uploads/' + pub.cover_image) }}" alt="{{ pub.title_fr }}" class="card-img-top">
+                {% else %}
+                <div class="card-img-top" style="display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); font-size: 2rem;">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <span class="card-category">{{ pub.category.replace('_', ' ').title() }}</span>
+                    <h3 class="card-title">{{ pub.title_fr }}</h3>
+                    <p class="card-meta"><i class="fas fa-user"></i> {{ pub.author_name }} &middot; {{ pub.published_at.strftime('%d %b %Y') }}</p>
+                    <p class="card-text">{{ pub.summary_fr[:150] }}{% if pub.summary_fr|length > 150 %}...{% endif %}</p>
+                    <a href="{{ url_for('publications.detail', slug=pub.slug) }}" class="card-link">Lire la suite <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            {% else %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--text-muted);">
+                <i class="fas fa-book-open" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                <h3>Aucune publication</h3>
+                <p>Aucune publication n'a été publiée pour le moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if publications.pages > 1 %}
+        <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 3rem;">
+            {% if publications.has_prev %}
+            <a href="?page={{ publications.prev_num }}&category={{ current_category }}&theme={{ current_theme }}&search={{ current_search }}" class="btn btn-outline">
+                <i class="fas fa-chevron-left"></i> Précédent
+            </a>
+            {% endif %}
+
+            {% for p in publications.iter_pages() %}
+            {% if p %}
+            <a href="?page={{ p }}&category={{ current_category }}&theme={{ current_theme }}&search={{ current_search }}"
+               class="btn {% if p == publications.page %}btn-primary{% else %}btn-outline{% endif %}">{{ p }}</a>
+            {% else %}
+            <span style="padding: 0.75rem 1rem;">...</span>
+            {% endif %}
+            {% endfor %}
+
+            {% if publications.has_next %}
+            <a href="?page={{ publications.next_num }}&category={{ current_category }}&theme={{ current_theme }}&search={{ current_search }}" class="btn btn-outline">
+                Suivant <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

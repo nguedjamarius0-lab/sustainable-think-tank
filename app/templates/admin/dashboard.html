@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Admin - Tendereo{% endblock %}
+{% block content %}
+<div class="admin-layout">
+    {% include "admin/_sidebar.html" %}
+    <main class="admin-main">
+        <div class="admin-header">
+            <h1>Tableau de bord</h1>
+            <span style="color: var(--text-muted);">Bienvenue, {{ current_user.name }}</span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(14,124,134,0.1); color: var(--primary-teal);"><i class="fas fa-users"></i></div>
+                <div><span class="stat-number">{{ stats.users }}</span><span class="stat-label">Utilisateurs</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(27,94,59,0.1); color: var(--primary-green);"><i class="fas fa-book"></i></div>
+                <div><span class="stat-number">{{ stats.publications }}</span><span class="stat-label">Publications</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(14,124,134,0.1); color: var(--primary-teal);"><i class="fas fa-calendar"></i></div>
+                <div><span class="stat-number">{{ stats.events }}</span><span class="stat-label">Événements</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(255,193,7,0.1); color: #f59e0b;"><i class="fas fa-envelope"></i></div>
+                <div><span class="stat-number">{{ stats.messages }}</span><span class="stat-label">Messages non lus</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(27,94,59,0.1); color: var(--primary-green);"><i class="fas fa-paper-plane"></i></div>
+                <div><span class="stat-number">{{ stats.newsletter }}</span><span class="stat-label">Newsletter</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(239,68,68,0.1); color: #ef4444;"><i class="fas fa-file-alt"></i></div>
+                <div><span class="stat-number">{{ stats.applications }}</span><span class="stat-label">Candidatures</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(14,124,134,0.1); color: var(--primary-teal);"><i class="fas fa-handshake"></i></div>
+                <div><span class="stat-number">{{ stats.partners }}</span><span class="stat-label">Partenaires</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(27,94,59,0.1); color: var(--primary-green);"><i class="fas fa-newspaper"></i></div>
+                <div><span class="stat-number">{{ stats.press }}</span><span class="stat-label">Presse</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(14,124,134,0.1); color: var(--primary-teal);"><i class="fas fa-bolt"></i></div>
+                <div><span class="stat-number">{{ stats.news }}</span><span class="stat-label">Actualités</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(27,94,59,0.1); color: var(--primary-green);"><i class="fas fa-file-pdf"></i></div>
+                <div><span class="stat-number">{{ stats.reports }}</span><span class="stat-label">Rapports</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(245,158,11,0.1); color: #f59e0b;"><i class="fas fa-users-cog"></i></div>
+                <div><span class="stat-number">{{ stats.pending_teams }}</span><span class="stat-label">Équipes à valider</span></div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+            <div class="admin-card">
+                <h3><i class="fas fa-users" style="color: var(--primary-teal);"></i> Derniers inscrits</h3>
+                {% for user in recent_users %}
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <strong>{{ user.name }}</strong><br>
+                        <small style="color: var(--text-muted);">{{ user.email }}</small>
+                    </div>
+                    <span class="badge {{ 'badge-admin' if user.role == 'admin' else 'badge-user' }}">{{ user.role }}</span>
+                </div>
+                {% else %}
+                <p style="color: var(--text-muted); padding: 1rem 0;">Aucun utilisateur.</p>
+                {% endfor %}
+                <a href="{{ url_for('admin.users_list') }}" style="display: block; text-align: center; padding: 0.75rem; color: var(--primary-teal); font-weight: 600; margin-top: 0.5rem;">Voir tous les utilisateurs</a>
+            </div>
+
+            <div class="admin-card">
+                <h3><i class="fas fa-envelope" style="color: var(--primary-green);"></i> Derniers messages</h3>
+                {% for msg in recent_messages %}
+                <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+                    <strong>{{ msg.name }}</strong> <small style="color: var(--text-muted);">— {{ msg.created_at.strftime('%d/%m') }}</small>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.25rem 0 0;">{{ msg.subject }}</p>
+                </div>
+                {% else %}
+                <p style="color: var(--text-muted); padding: 1rem 0;">Aucun message.</p>
+                {% endfor %}
+                <a href="{{ url_for('admin.messages') }}" style="display: block; text-align: center; padding: 0.75rem; color: var(--primary-teal); font-weight: 600; margin-top: 0.5rem;">Voir tous les messages</a>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+            <div class="admin-card">
+                <h3><i class="fas fa-users-cog" style="color: #f59e0b;"></i> Équipes à valider</h3>
+                {% for team in pending_teams %}
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <strong>{{ team.name }}</strong><br>
+                        <small style="color: var(--text-muted);">{{ team.theme }} — {{ team.members.count() }} membre(s)</small>
+                    </div>
+                    <a href="{{ url_for('admin.team_detail', team_id=team.id) }}" class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">
+                        <i class="fas fa-eye"></i> Voir
+                    </a>
+                </div>
+                {% else %}
+                <p style="color: var(--text-muted); padding: 1rem 0;">Aucune équipe en attente.</p>
+                {% endfor %}
+                {% if pending_teams|length > 0 %}
+                <a href="{{ url_for('admin.pending_teams') }}" style="display: block; text-align: center; padding: 0.75rem; color: var(--primary-teal); font-weight: 600; margin-top: 0.5rem;">Voir toutes les équipes</a>
+                {% endif %}
+            </div>
+
+            <div class="admin-card">
+                <h3><i class="fas fa-file-alt" style="color: #ef4444;"></i> Candidatures à traiter</h3>
+                {% for app in pending_applications %}
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <strong>{{ app.name }}</strong><br>
+                        <small style="color: var(--text-muted);">{{ app.email }} — {{ app.created_at.strftime('%d/%m/%Y') }}</small>
+                    </div>
+                    <a href="{{ url_for('admin.applications') }}" class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">
+                        <i class="fas fa-eye"></i> Voir
+                    </a>
+                </div>
+                {% else %}
+                <p style="color: var(--text-muted); padding: 1rem 0;">Aucune candidature en attente.</p>
+                {% endfor %}
+                {% if pending_applications|length > 0 %}
+                <a href="{{ url_for('admin.applications') }}" style="display: block; text-align: center; padding: 0.75rem; color: var(--primary-teal); font-weight: 600; margin-top: 0.5rem;">Voir toutes les candidatures</a>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
