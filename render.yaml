@@ -17,7 +17,8 @@ services:
         value: flask_app:app
       - key: FLASK_CONFIG
         value: production
-    databases:
-      - name: tendereo-db
-        plan: free
-        databaseName: tendereo
+
+databases:
+  - name: tendereo-db
+    plan: free
+    databaseName: tendereo
