@@ -1,8 +1,10 @@
 """Seed script — creates admin account only."""
+import os
 from app import create_app, db
 from app.models import User
 
-app = create_app()
+config_name = os.environ.get("FLASK_CONFIG", "development")
+app = create_app(config_name)
 
 with app.app_context():
     db.create_all()
