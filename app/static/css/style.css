@@ -266,6 +266,25 @@ img { max-width: 100%; height: auto; }
     gap: 0.75rem;
 }
 
+/* ===== HAMBURGER MENU ===== */
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    z-index: 1001;
+}
+.hamburger span {
+    display: block;
+    width: 24px;
+    height: 3px;
+    background: #1a1a1a;
+    margin: 5px 0;
+    border-radius: 2px;
+    transition: 0.3s;
+}
+
 .top-bar-right .theme-toggle {
     border-color: rgba(255,255,255,0.2);
     color: #fff;
@@ -1170,6 +1189,9 @@ select.form-control {
     }
     .top-bar {
         display: flex;
+    }
+    .hamburger {
+        display: block;
     }
     .main-content {
         margin-left: 0;
