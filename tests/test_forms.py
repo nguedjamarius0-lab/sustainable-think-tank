@@ -64,7 +64,8 @@ def test_team_step1_form(app):
     with app.test_request_context():
         form = TeamStep1Form(_make_formdata(
             name="Test Team",
-            theme="Économie"
+            theme="Économie",
+            vision="Notre vision est de contribuer au développement durable."
         ))
         assert form.validate()
 

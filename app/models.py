@@ -13,11 +13,12 @@ class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
-    password_hash = db.Column(db.String(256), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=True)
     name = db.Column(db.String(150), nullable=False)
     role = db.Column(db.String(20), default="user")  # user, admin, editor
     is_verified = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=True)
+    google_id = db.Column(db.String(100), nullable=True, unique=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     def set_password(self, password):
@@ -28,25 +29,6 @@ class User(UserMixin, db.Model):
 
     def can_publish(self):
         return self.role in ("admin", "editor")
-
-
-class EmailVerification(db.Model):
-    __tablename__ = "email_verifications"
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), nullable=False, index=True)
-    code = db.Column(db.String(6), nullable=False)
-    purpose = db.Column(db.String(30), nullable=False)
-    is_used = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-
-    def is_expired(self):
-        from datetime import timedelta
-        return datetime.now(timezone.utc) - self.created_at.replace(tzinfo=timezone.utc) > timedelta(minutes=10)
-
-    @staticmethod
-    def generate_code():
-        import random
-        return ''.join(random.choices('0123456789', k=6))
 
 
 class Publication(db.Model):

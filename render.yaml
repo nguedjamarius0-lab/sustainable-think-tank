@@ -4,6 +4,7 @@ services:
     runtime: python
     buildCommand: pip install -r requirements.txt
     startCommand: flask db upgrade && python seed.py && gunicorn flask_app:app --bind 0.0.0.0:$PORT
+    healthCheckPath: /health
     envVars:
       - key: SECRET_KEY
         generateValue: true
@@ -17,24 +18,16 @@ services:
         value: flask_app:app
       - key: FLASK_CONFIG
         value: production
-      - key: MAIL_SERVER
-        sync: false
-      - key: MAIL_PORT
-        value: "587"
-      - key: MAIL_USE_TLS
-        value: "True"
-      - key: MAIL_USERNAME
-        sync: false
-      - key: MAIL_PASSWORD
-        sync: false
-      - key: MAIL_DEFAULT_SENDER
-        value: noreply@tendereo.org
       - key: DONATION_URL
         sync: false
       - key: ADMIN_REG_CODE
         sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
       - key: WEB_CONCURRENCY
-        value: "4"
+        value: "1"
 
 databases:
   - name: tendereo-db

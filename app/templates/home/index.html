@@ -7,16 +7,16 @@
     <div class="container">
         <h1>Tendereo Sustainability Institute</h1>
         <p class="slogan">Informer, Influencer, Impacter — Pour un avenir durable en Afrique</p>
-        <a href="{{ url_for('publications.list_publications') }}" class="btn btn-primary" style="margin-right: 1rem;">
+        <a href="{{ url_for('publications.list_publications') }}" class="btn btn-primary hero-btn">
             <i class="fas fa-book-open"></i> Nos publications
         </a>
-        <a href="{{ url_for('contact.index') }}" class="btn btn-outline" style="color: #fff; border-color: rgba(255,255,255,0.3);">
+        <a href="{{ url_for('contact.index') }}" class="btn btn-outline hero-btn-outline">
             <i class="fas fa-envelope"></i> Nous contacter
         </a>
 
-        <div class="video-wrapper" style="display:flex; align-items:center; justify-content:center; flex-direction:column; gap:1rem; background:rgba(255,255,255,0.08); border:2px dashed rgba(255,255,255,0.25);">
-            <i class="fas fa-video" style="font-size:2.5rem; opacity:0.5;"></i>
-            <p style="opacity:0.6; font-size:0.95rem;">Vidéo de présentation à venir</p>
+        <div class="video-wrapper video-placeholder">
+            <i class="fas fa-video"></i>
+            <p>Vidéo de présentation à venir</p>
         </div>
     </div>
 </section>
@@ -24,7 +24,7 @@
 <section class="newsletter-bar">
     <div class="container">
         <p><i class="fas fa-paper-plane"></i> Restez informé de nos travaux</p>
-        <form action="{{ url_for('contact.newsletter') }}" method="POST" style="display: flex; gap: 0.5rem;">
+        <form action="{{ url_for('contact.newsletter') }}" method="POST">
             {{ newsletter_form.hidden_tag() }}
             {{ newsletter_form.email(placeholder="Votre adresse email", required=true) }}
             <button type="submit">S'inscrire</button>
@@ -34,10 +34,10 @@
 
 <section class="section">
     <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div class="section-header">
             <div>
                 <h2 class="section-title">À la une</h2>
-                <p class="section-subtitle" style="margin-bottom: 0;">Nos dernières publications mises en avant</p>
+                <p class="section-subtitle">Nos dernières publications mises en avant</p>
             </div>
             <a href="{{ url_for('publications.list_publications') }}" class="btn btn-outline">Voir toutes les publications <i class="fas fa-arrow-right"></i></a>
         </div>
@@ -48,7 +48,7 @@
                 {% if pub.cover_image %}
                 <img src="{{ url_for('static', filename='uploads/' + pub.cover_image) }}" alt="{{ pub.title_fr }}" class="card-img-top">
                 {% else %}
-                <div class="card-img-top" style="display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); font-size: 2rem;">
+                <div class="card-img-top card-img-placeholder">
                     <i class="fas fa-file-alt"></i>
                 </div>
                 {% endif %}
@@ -61,8 +61,8 @@
                 </div>
             </div>
             {% else %}
-            <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
-                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
                 <p>Aucune publication pour le moment. Revenez bientôt !</p>
             </div>
             {% endfor %}
@@ -71,12 +71,12 @@
 </section>
 
 {% if upcoming_event %}
-<section class="section" style="background: var(--light-bg);">
+<section class="section section-alt">
     <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div class="section-header">
             <div>
                 <h2 class="section-title"><i class="fas fa-calendar-alt" style="color: var(--primary-teal);"></i> Prochain événement</h2>
-                <p class="section-subtitle" style="margin-bottom: 0;">Ne manquez pas notre prochain rendez-vous</p>
+                <p class="section-subtitle">Ne manquez pas notre prochain rendez-vous</p>
             </div>
             <a href="{{ url_for('events.list_events') }}" class="btn btn-outline">Voir l'agenda <i class="fas fa-arrow-right"></i></a>
         </div>
@@ -89,12 +89,12 @@
             <div class="event-info">
                 <span class="event-type-badge">{{ upcoming_event.event_type.title() }}</span>
                 <h3>{{ upcoming_event.title_fr }}</h3>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                <p class="event-meta">
                     <i class="fas fa-map-marker-alt"></i> {{ upcoming_event.location or 'En ligne' }} &middot;
                     <i class="fas fa-clock"></i> {{ upcoming_event.start_date.strftime('%Hh%M') }}
                 </p>
-                <p style="font-size: 0.9rem; color: var(--text-muted);">{{ upcoming_event.description_fr[:200] }}{% if upcoming_event.description_fr|length > 200 %}...{% endif %}</p>
-                <a href="{{ url_for('events.detail', slug=upcoming_event.slug) }}" class="card-link" style="margin-top: 0.75rem;">En savoir plus <i class="fas fa-arrow-right"></i></a>
+                <p class="card-text">{{ upcoming_event.description_fr[:200] }}{% if upcoming_event.description_fr|length > 200 %}...{% endif %}</p>
+                <a href="{{ url_for('events.detail', slug=upcoming_event.slug) }}" class="card-link">En savoir plus <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
     </div>
@@ -106,7 +106,7 @@
         <h2 class="section-title">Fil d'actualité</h2>
         <p class="section-subtitle">Brèves, réactions et citations de nos experts</p>
 
-        <div style="max-width: 800px;">
+        <div class="news-feed">
             {% for item in news %}
             <div class="news-item">
                 <p class="time"><i class="fas fa-clock"></i> {{ item.created_at.strftime('%d %B %Y') }}</p>
@@ -114,8 +114,8 @@
                 <p>{{ item.content_fr[:200] }}{% if item.content_fr|length > 200 %}...{% endif %}</p>
             </div>
             {% else %}
-            <p style="color: var(--text-muted); padding: 2rem; text-align: center;">
-                <i class="fas fa-newspaper" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+            <p class="empty-state">
+                <i class="fas fa-newspaper"></i>
                 Aucune actualité pour le moment.
             </p>
             {% endfor %}
@@ -123,12 +123,12 @@
     </div>
 </section>
 
-<section class="section" style="background: var(--light-bg);">
+<section class="section section-alt">
     <div class="container">
         <div class="about-grid">
             <div>
                 <h2 class="section-title">À propos</h2>
-                <p style="font-size: 1.05rem; line-height: 1.8; margin-bottom: 1.5rem;">
+                <p class="about-text">
                     Le <strong>Tendereo Sustainability Institute</strong> est un think tank indépendant engagé pour la recherche et l'innovation en matière de développement durable en Afrique. Nous combinons expertise académique et pragmatisme politique pour éclairer les décisions publiques.
                 </p>
                 <div class="about-values">
@@ -151,11 +151,11 @@
                 </div>
             </div>
             <div>
-                <div style="background: linear-gradient(135deg, var(--primary-green), var(--primary-teal)); border-radius: 16px; padding: 3rem; color: #fff; text-align: center;">
-                    <i class="fas fa-file-pdf" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                    <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Rapport d'activité 2025</h3>
-                    <p style="opacity: 0.85; margin-bottom: 1.5rem;">Téléchargez notre rapport annuel pour découvrir l'ensemble de nos actions et résultats.</p>
-                    <a href="#" class="btn" style="background: #fff; color: var(--primary-green);">
+                <div class="report-card">
+                    <i class="fas fa-file-pdf"></i>
+                    <h3>Rapport d'activité 2025</h3>
+                    <p>Téléchargez notre rapport annuel pour découvrir l'ensemble de nos actions et résultats.</p>
+                    <a href="#" class="btn btn-report">
                         <i class="fas fa-download"></i> Télécharger le PDF
                     </a>
                 </div>
@@ -175,7 +175,7 @@
             <div class="team-card">
                 <div class="team-photo">
                     {% if member.photo %}
-                    <img src="{{ url_for('static', filename='uploads/' + member.photo) }}" alt="{{ member.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{{ url_for('static', filename='uploads/' + member.photo) }}" alt="{{ member.name }}">
                     {% else %}
                     <i class="fas fa-user"></i>
                     {% endif %}

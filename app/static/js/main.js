@@ -10,13 +10,19 @@ function toggleTheme() {
 
 function updateThemeIcons(theme) {
     const icon = document.getElementById('theme-icon');
-    const iconFooter = document.getElementById('theme-icon-footer');
+    const btnFooter = document.getElementById('theme-toggle-footer');
     if (icon) {
         icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
     }
-    if (iconFooter) {
-        iconFooter.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        iconFooter.nextElementSibling && (iconFooter.parentElement.textContent = theme === 'dark' ? ' Mode clair' : ' Mode sombre');
+    if (btnFooter) {
+        const iconFooter = document.getElementById('theme-icon-footer');
+        if (iconFooter) {
+            iconFooter.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        const textNode = btnFooter.childNodes[btnFooter.childNodes.length - 1];
+        if (textNode && textNode.nodeType === 3) {
+            textNode.textContent = theme === 'dark' ? ' Mode clair' : ' Mode sombre';
+        }
     }
 }
 
@@ -35,9 +41,39 @@ document.querySelectorAll('.nav-links a').forEach(link => {
 });
 
 // Mobile menu toggle
-document.querySelector('.hamburger')?.addEventListener('click', function() {
-    document.querySelector('.nav-links').classList.toggle('open');
-});
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
+
+if (hamburger && navLinks) {
+    hamburger.addEventListener('click', function() {
+        navLinks.classList.toggle('open');
+        hamburger.classList.toggle('active');
+    });
+
+    // Close menu when clicking a link
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('open');
+            hamburger.classList.remove('active');
+        });
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+            navLinks.classList.remove('open');
+            hamburger.classList.remove('active');
+        }
+    });
+
+    // Close menu on Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && navLinks.classList.contains('open')) {
+            navLinks.classList.remove('open');
+            hamburger.classList.remove('active');
+        }
+    });
+}
 
 // Password toggle
 function togglePassword(id, btn) {
@@ -57,13 +93,36 @@ document.querySelector('.user-menu-btn')?.addEventListener('click', function() {
     this.parentElement.classList.toggle('open');
 });
 
-// Flash messages auto-dismiss
+// Close user menu on outside click
+document.addEventListener('click', function(e) {
+    const userMenu = document.querySelector('.user-menu');
+    if (userMenu && !userMenu.contains(e.target)) {
+        userMenu.classList.remove('open');
+    }
+});
+
+// Flash messages auto-dismiss with close button
 document.querySelectorAll('.flash').forEach(flash => {
-    setTimeout(() => {
+    // Add close button
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'flash-close';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.setAttribute('aria-label', 'Fermer');
+    closeBtn.addEventListener('click', function() {
         flash.style.opacity = '0';
         flash.style.transform = 'translateY(-10px)';
         setTimeout(() => flash.remove(), 300);
-    }, 5000);
+    });
+    flash.appendChild(closeBtn);
+
+    // Auto dismiss after 8 seconds
+    setTimeout(() => {
+        if (flash.parentNode) {
+            flash.style.opacity = '0';
+            flash.style.transform = 'translateY(-10px)';
+            setTimeout(() => flash.remove(), 300);
+        }
+    }, 8000);
 });
 
 // ===== PWA Service Worker + Install Banner =====

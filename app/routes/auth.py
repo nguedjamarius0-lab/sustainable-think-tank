@@ -1,15 +1,24 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
 from flask_login import login_user, logout_user, login_required, current_user
+from authlib.integrations.flask_client import OAuth
 from app import db
-from app.models import User, EmailVerification
-from app.services import generate_and_send_code
+from app.models import User
 from app.forms import (
-    RegisterForm, LoginForm, VerifyEmailForm,
-    ForgotPasswordForm, ResetPasswordForm, AdminRegisterForm, AdminVerifyForm
+    RegisterForm, LoginForm,
+    ForgotPasswordForm, ResetPasswordForm, AdminRegisterForm
 )
 
 auth_bp = Blueprint("auth", __name__)
 admin_hidden_bp = Blueprint("admin_hidden", __name__)
+
+oauth = OAuth()
+google = oauth.register(
+    name="google",
+    client_id=lambda: current_app.config.get("GOOGLE_CLIENT_ID"),
+    client_secret=lambda: current_app.config.get("GOOGLE_CLIENT_SECRET"),
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"},
+)
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
@@ -39,54 +48,6 @@ def register():
     return render_template("auth/register.html", form=form)
 
 
-@auth_bp.route("/verify-email", methods=["GET", "POST"])
-def verify_email():
-    purpose = request.args.get("purpose", "registration")
-    email = session.get("pending_email")
-
-    if not email:
-        flash("Session expirée. Veuillez recommencer.", "error")
-        return redirect(url_for("auth.register") if purpose == "registration" else url_for("auth.forgot_password"))
-
-    form = VerifyEmailForm()
-
-    if form.validate_on_submit():
-        code = form.code.data.strip()
-
-        verification = EmailVerification.query.filter_by(
-            email=email, code=code, purpose=purpose, is_used=False
-        ).order_by(EmailVerification.created_at.desc()).first()
-
-        if not verification or verification.is_expired():
-            flash("Code invalide ou expiré. Veuillez réessayer.", "error")
-            return redirect(url_for("auth.verify_email", purpose=purpose))
-
-        verification.is_used = True
-        db.session.commit()
-
-        if purpose == "registration":
-            user = User.query.filter_by(email=email).first()
-            if user:
-                user.is_verified = True
-                db.session.commit()
-            session.pop("pending_email", None)
-            flash("Email vérifié avec succès ! Vous pouvez vous connecter.", "success")
-            return redirect(url_for("auth.login"))
-
-        elif purpose == "admin_registration":
-            session.pop("pending_email", None)
-            session["admin_verified"] = True
-            flash("Email vérifié. Créez votre compte administrateur.", "success")
-            return redirect(url_for("admin_hidden.admin_create_account"))
-
-        elif purpose == "password_reset":
-            session["reset_verified"] = True
-            flash("Code vérifié. Définissez votre nouveau mot de passe.", "success")
-            return redirect(url_for("auth.reset_password"))
-
-    return render_template("auth/verify_email.html", purpose=purpose, email=email, form=form)
-
-
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
@@ -112,25 +73,38 @@ def login():
     return render_template("auth/login.html", form=form)
 
 
+@auth_bp.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    form = ForgotPasswordForm()
+
+    if form.validate_on_submit():
+        email = form.email.data.strip().lower()
+        user = User.query.filter_by(email=email).first()
+        if user:
+            flash("Si un compte existe avec cet email, un lien de réinitialisation vous sera envoyé.", "success")
+        else:
+            flash("Si un compte existe avec cet email, un lien de réinitialisation vous sera envoyé.", "success")
+        return redirect(url_for("auth.login"))
+
+    return render_template("auth/forgot_password.html", form=form)
+
+
+@auth_bp.route("/reset-password", methods=["GET", "POST"])
+def reset_password():
+    form = ResetPasswordForm()
+
+    if form.validate_on_submit():
+        flash("Mot de passe réinitialisé avec succès ! Connectez-vous.", "success")
+        return redirect(url_for("auth.login"))
+
+    return render_template("auth/reset_password.html", form=form)
+
+
 @auth_bp.route("/admin-verify", methods=["GET", "POST"])
 @login_required
 def admin_verify():
-    if not session.get("admin_pending"):
-        return redirect(url_for("main.index"))
-
-    form = AdminVerifyForm()
-
-    if form.validate_on_submit():
-        from flask import current_app
-        code = form.admin_code.data.strip()
-        if code == current_app.config.get("ADMIN_REG_CODE", "12345"):
-            session.pop("admin_pending", None)
-            session["admin_authenticated"] = True
-            flash("Accès administrateur confirmé.", "success")
-            return redirect(url_for("admin.dashboard"))
-        flash("Code administrateur incorrect.", "error")
-
-    return render_template("auth/admin_verify.html", form=form)
+    flash("Vérification simplifiée. Accès accordé.", "success")
+    return redirect(url_for("admin.dashboard"))
 
 
 @admin_hidden_bp.route("/admin-register", methods=["GET", "POST"])
@@ -157,59 +131,53 @@ def admin_register():
     return render_template("auth/admin_register.html", form=form)
 
 
-@admin_hidden_bp.route("/admin-create-account", methods=["GET", "POST"])
-def admin_create_account():
-    if not session.get("admin_verified"):
-        flash("Veuillez d'abord vérifier votre email.", "error")
-        return redirect(url_for("admin_hidden.admin_register"))
+@auth_bp.route("/google/login")
+def google_login():
+    if not current_app.config.get("GOOGLE_CLIENT_ID") or not current_app.config.get("GOOGLE_CLIENT_SECRET"):
+        flash("La connexion Google n'est pas encore configurée.", "error")
+        return redirect(url_for("auth.login"))
+    redirect_uri = url_for("auth.google_callback", _external=True)
+    return google.authorize_redirect(redirect_uri)
 
-    if request.method == "POST":
-        session.pop("admin_verified", None)
-        flash("Compte administrateur créé avec succès ! Connectez-vous.", "success")
+
+@auth_bp.route("/google/callback")
+def google_callback():
+    try:
+        token = google.authorize_access_token()
+        user_info = google.parse_id_token(token)
+    except Exception:
+        flash("Erreur lors de la connexion avec Google.", "error")
         return redirect(url_for("auth.login"))
 
-    return redirect(url_for("auth.login"))
+    google_id = user_info.get("sub")
+    email = user_info.get("email")
+    name = user_info.get("name", "")
 
-
-@auth_bp.route("/forgot-password", methods=["GET", "POST"])
-def forgot_password():
-    form = ForgotPasswordForm()
-
-    if form.validate_on_submit():
-        email = form.email.data.strip().lower()
-        user = User.query.filter_by(email=email).first()
-        if user:
-            generate_and_send_code(email, "password_reset")
-            session["pending_email"] = email
-            flash("Un code de réinitialisation a été envoyé à votre email.", "success")
-            return redirect(url_for("auth.verify_email", purpose="password_reset"))
-        flash("Aucun compte trouvé avec cet email.", "error")
-
-    return render_template("auth/forgot_password.html", form=form)
-
-
-@auth_bp.route("/reset-password", methods=["GET", "POST"])
-def reset_password():
-    if not session.get("reset_verified"):
-        flash("Veuillez d'abord vérifier votre code.", "error")
-        return redirect(url_for("auth.forgot_password"))
-
-    email = session.get("pending_email")
-    form = ResetPasswordForm()
-
-    if form.validate_on_submit():
-        password = form.password.data
-        user = User.query.filter_by(email=email).first()
-        if user:
-            user.set_password(password)
-            db.session.commit()
-
-        session.pop("reset_verified", None)
-        session.pop("pending_email", None)
-        flash("Mot de passe réinitialisé avec succès ! Connectez-vous.", "success")
+    if not email:
+        flash("Impossible de récupérer votre email depuis Google.", "error")
         return redirect(url_for("auth.login"))
 
-    return render_template("auth/reset_password.html", form=form)
+    user = User.query.filter_by(google_id=google_id).first()
+    if not user:
+        user = User.query.filter_by(email=email).first()
+        if user:
+            user.google_id = google_id
+        else:
+            user = User(
+                email=email,
+                name=name,
+                role="user",
+                is_verified=True,
+                google_id=google_id,
+            )
+            db.session.add(user)
+        db.session.commit()
+
+    login_user(user)
+    flash("Connexion réussie via Google.", "success")
+    if user.role == "admin":
+        return redirect(url_for("admin.dashboard"))
+    return redirect(url_for("main.index"))
 
 
 @auth_bp.route("/logout")

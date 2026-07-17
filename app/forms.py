@@ -24,10 +24,6 @@ class LoginForm(FlaskForm):
     password = PasswordField("Mot de passe", validators=[DataRequired()])
 
 
-class VerifyEmailForm(FlaskForm):
-    code = StringField("Code", validators=[DataRequired(), Length(min=6, max=6)])
-
-
 class ForgotPasswordForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
 
@@ -44,10 +40,6 @@ class AdminRegisterForm(FlaskForm):
     name = StringField("Nom", validators=[DataRequired(), Length(min=2, max=150)])
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Mot de passe", validators=[DataRequired(), Length(min=6)])
-
-
-class AdminVerifyForm(FlaskForm):
-    admin_code = StringField("Code administrateur", validators=[DataRequired()])
 
 
 class ContactForm(FlaskForm):

@@ -1,8 +1,7 @@
 import os
-from flask import Flask, request, session, render_template
+from flask import Flask, request, session, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_babel import Babel
 from flask_limiter import Limiter
@@ -12,7 +11,6 @@ from flask_wtf.csrf import CSRFProtect
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-mail = Mail()
 migrate = Migrate()
 babel = Babel()
 limiter = Limiter(key_func=get_remote_address)
@@ -37,7 +35,6 @@ def create_app(config_name=None):
 
     db.init_app(app)
     login_manager.init_app(app)
-    mail.init_app(app)
     migrate.init_app(app, db)
     babel.init_app(app, locale_selector=get_locale)
     limiter.init_app(app)
@@ -72,9 +69,15 @@ def create_app(config_name=None):
     from app.routes.contact import contact_bp
     from app.routes.team import team_bp
     from app.routes.join import join_bp
-    from app.routes.auth import auth_bp, admin_hidden_bp
+    from app.routes.auth import auth_bp, admin_hidden_bp, oauth
     from app.routes.admin_views import admin_bp
     from app.routes.reseau import reseau_bp
+
+    oauth.init_app(app)
+
+    @app.route("/health")
+    def health_check():
+        return jsonify({"status": "ok"}), 200
 
     app.register_blueprint(main_bp)
     app.register_blueprint(publications_bp, url_prefix="/publications")

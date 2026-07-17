@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
-from flask_mail import Message
-from app import db, mail, limiter
+from flask import Blueprint, render_template, request, flash, redirect, url_for
+from app import db, limiter
 from app.models import ContactMessage, NewsletterSubscriber
 from app.forms import ContactForm, NewsletterForm
 
@@ -23,17 +22,6 @@ def index():
         )
         db.session.add(msg_entry)
         db.session.commit()
-
-        try:
-            msg = Message(
-                subject=f"[Tendereo Contact] {subject}",
-                recipients=[current_app.config.get("MAIL_DEFAULT_SENDER", "info@tendereo.org")],
-                body=f"Nom: {name}\nEmail: {email}\n\n{message_text}",
-                reply_to=email,
-            )
-            mail.send(msg)
-        except Exception:
-            pass
 
         flash("Votre message a bien été envoyé. Nous vous répondrons rapidement.", "success")
         return redirect(url_for("contact.index"))

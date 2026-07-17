@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, jsonify, current_app
+from datetime import datetime
+from flask import Blueprint, render_template, request, jsonify, current_app, session, redirect
 from app.models import Publication, Event, NewsItem, TeamMember
 from app.forms import NewsletterForm
 
@@ -25,7 +26,7 @@ def index():
         ).limit(3).all()
 
     upcoming_event = Event.query.filter(
-        Event.start_date >= __import__("datetime").datetime.now()
+        Event.start_date >= datetime.now()
     ).order_by(Event.start_date.asc()).first()
 
     latest_news = NewsItem.query.filter_by(is_published=True).order_by(
@@ -47,7 +48,6 @@ def index():
 
 @main_bp.route("/set-language/<lang>")
 def set_language(lang):
-    from flask import session, redirect, request as req
     if lang in ("fr", "en"):
         session["lang"] = lang
-    return redirect(req.referrer or "/")
+    return redirect(request.referrer or "/")
