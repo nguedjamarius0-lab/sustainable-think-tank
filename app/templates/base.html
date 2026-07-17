@@ -21,29 +21,43 @@
 </head>
 <body>
     {% block navbar %}
-    <nav class="navbar">
-        <div class="container">
-            <a href="{{ url_for('main.index') }}" class="navbar-brand">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('main.index') }}" class="sidebar-brand">
                 <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Tendereo">
                 <div>
                     <span class="brand-text">Tendereo</span>
                     <span class="brand-sub">Sustainability Institute</span>
                 </div>
             </a>
-
-            <button class="hamburger" aria-label="Menu">
-                <span></span><span></span><span></span>
+            <button class="sidebar-close" id="sidebar-close" aria-label="Fermer le menu">
+                <i class="fas fa-times"></i>
             </button>
+        </div>
 
-            <ul class="nav-links">
-                <li><a href="{{ url_for('publications.list_publications') }}" class="{% if request.endpoint and 'publications' in request.endpoint %}active{% endif %}">Publications</a></li>
-                <li><a href="{{ url_for('events.list_events') }}" class="{% if request.endpoint and 'events' in request.endpoint %}active{% endif %}">Événements</a></li>
-                <li><a href="{{ url_for('team.index') }}" class="{% if request.endpoint and 'team' in request.endpoint %}active{% endif %}">Équipe</a></li>
-                <li><a href="{{ url_for('reseau.index') }}" class="{% if request.endpoint and 'reseau' in request.endpoint %}active{% endif %}">Réseau</a></li>
-                <li><a href="{{ url_for('contact.index') }}" class="{% if request.endpoint and 'contact' in request.endpoint %}active{% endif %}">Contact</a></li>
-            </ul>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('main.index') }}" class="{% if request.endpoint == 'main.index' %}active{% endif %}">
+                <i class="fas fa-home"></i> Accueil
+            </a>
+            <a href="{{ url_for('publications.list_publications') }}" class="{% if request.endpoint and 'publications' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-book-open"></i> Publications
+            </a>
+            <a href="{{ url_for('events.list_events') }}" class="{% if request.endpoint and 'events' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-calendar-alt"></i> Événements
+            </a>
+            <a href="{{ url_for('team.index') }}" class="{% if request.endpoint and 'team' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-users"></i> Équipe
+            </a>
+            <a href="{{ url_for('reseau.index') }}" class="{% if request.endpoint and 'reseau' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-video"></i> Réseau
+            </a>
+            <a href="{{ url_for('contact.index') }}" class="{% if request.endpoint and 'contact' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-envelope"></i> Contact
+            </a>
+        </nav>
 
-            <div class="nav-right">
+        <div class="sidebar-footer">
+            <div class="sidebar-actions">
                 <div class="lang-switch">
                     <a href="{{ url_for('main.set_language', lang='fr') }}" class="{% if session.get('lang', 'fr') == 'fr' %}active{% endif %}">FR</a>
                     <a href="{{ url_for('main.set_language', lang='en') }}" class="{% if session.get('lang') == 'en' %}active{% endif %}">EN</a>
@@ -52,44 +66,80 @@
                 <button id="theme-toggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Changer de thème">
                     <i class="fas fa-moon" id="theme-icon"></i>
                 </button>
-
-                {% if current_user.is_authenticated %}
-                <div class="user-menu">
-                    <button class="user-menu-btn">
-                        <i class="fas fa-user-circle"></i> {{ current_user.name }}
-                    </button>
-                    <div class="user-dropdown">
-                        {% if current_user.role == 'admin' %}
-                        <a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                        {% endif %}
-                        <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-                    </div>
-                </div>
-                {% else %}
-                <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-nav-login">
-                    <i class="fas fa-sign-in-alt"></i> Connexion
-                </a>
-                {% endif %}
-
-                <a href="{{ donation_url | default('#') }}" class="btn-donate" target="_blank">
-                    <i class="fas fa-heart"></i> Faire un don
-                </a>
             </div>
+
+            {% if current_user.is_authenticated %}
+            <div class="user-menu">
+                <button class="user-menu-btn">
+                    <i class="fas fa-user-circle"></i> {{ current_user.name }}
+                </button>
+                <div class="user-dropdown">
+                    {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    {% endif %}
+                    <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                </div>
+            </div>
+            {% else %}
+            <a href="{{ url_for('auth.login') }}" class="btn btn-sidebar-login">
+                <i class="fas fa-sign-in-alt"></i> Connexion
+            </a>
+            {% endif %}
+
+            <a href="{{ donation_url | default('#') }}" class="btn-donate-sidebar" target="_blank">
+                <i class="fas fa-heart"></i> Faire un don
+            </a>
         </div>
-    </nav>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <header class="top-bar">
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <a href="{{ url_for('main.index') }}" class="top-bar-brand">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Tendereo">
+            <span>Tendereo</span>
+        </a>
+        <div class="top-bar-right">
+            <button id="theme-toggle-top" onclick="toggleTheme()" class="theme-toggle" aria-label="Changer de thème">
+                <i class="fas fa-moon" id="theme-icon-top"></i>
+            </button>
+            {% if current_user.is_authenticated %}
+            <div class="user-menu">
+                <button class="user-menu-btn">
+                    <i class="fas fa-user-circle"></i>
+                </button>
+                <div class="user-dropdown">
+                    {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    {% endif %}
+                    <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                </div>
+            </div>
+            {% else %}
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-nav-login">
+                <i class="fas fa-sign-in-alt"></i>
+            </a>
+            {% endif %}
+        </div>
+    </header>
     {% endblock navbar %}
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    <div class="container flash-container">
-        {% for category, message in messages %}
-        <div class="flash flash-{{ category }}">{{ message }}</div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    {% endwith %}
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
 
-    {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
+    </main>
 
     {% block footer %}
     <footer class="footer">
@@ -153,18 +203,33 @@
     </footer>
     {% endblock footer %}
 
-    <div id="pwa-install-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999; background:linear-gradient(135deg, #0E7C86, #1B5E3B); color:#fff; padding:0.65rem 1.5rem; box-shadow:0 -4px 20px rgba(0,0,0,0.25);">
-        <div class="container" style="display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
-            <div style="display:flex; align-items:center; gap:0.75rem;">
-                <img src="{{ url_for('static', filename='images/icon-192.png') }}" alt="Tendereo" style="width:32px; height:32px; border-radius:6px;">
+    <div id="pwa-install-banner" class="pwa-banner">
+        <div class="container pwa-banner-inner">
+            <div class="pwa-banner-info">
+                <img src="{{ url_for('static', filename='images/icon-192.png') }}" alt="Tendereo" class="pwa-banner-icon">
                 <div>
-                    <strong style="font-size:0.9rem;">Installer Tendereo</strong>
-                    <span style="display:block; font-size:0.75rem; opacity:0.85;">Accédez rapidement depuis votre écran d'accueil</span>
+                    <strong>Installer Tendereo</strong>
+                    <span>Accédez rapidement depuis votre écran d'accueil</span>
                 </div>
             </div>
-            <div style="display:flex; gap:0.5rem;">
-                <button id="pwa-install-btn" style="background:#fff; color:#0E7C86; border:none; padding:0.45rem 1.1rem; border-radius:20px; font-weight:700; font-size:0.8rem; cursor:pointer;">Installer</button>
-                <button id="pwa-dismiss-btn" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.4); padding:0.45rem 0.9rem; border-radius:20px; font-size:0.8rem; cursor:pointer;">Plus tard</button>
+            <div class="pwa-banner-actions">
+                <button id="pwa-install-btn" class="pwa-btn-install">Installer</button>
+                <button id="pwa-dismiss-btn" class="pwa-btn-dismiss">Plus tard</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="ios-install-hint" class="pwa-banner" style="display:none;">
+        <div class="container pwa-banner-inner">
+            <div class="pwa-banner-info">
+                <img src="{{ url_for('static', filename='images/icon-192.png') }}" alt="Tendereo" class="pwa-banner-icon">
+                <div>
+                    <strong>Installer Tendereo</strong>
+                    <span>Appuyez sur <i class="fas fa-share-from-square"></i> puis "Ajouter à l'écran d'accueil"</span>
+                </div>
+            </div>
+            <div class="pwa-banner-actions">
+                <button id="ios-dismiss-btn" class="pwa-btn-dismiss">Compris</button>
             </div>
         </div>
     </div>

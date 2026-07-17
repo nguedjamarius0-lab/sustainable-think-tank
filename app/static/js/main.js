@@ -9,16 +9,13 @@ function toggleTheme() {
 }
 
 function updateThemeIcons(theme) {
-    const icon = document.getElementById('theme-icon');
-    const btnFooter = document.getElementById('theme-toggle-footer');
-    if (icon) {
+    const icons = document.querySelectorAll('[id^="theme-icon"]');
+    icons.forEach(icon => {
         icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-    }
+    });
+
+    const btnFooter = document.getElementById('theme-toggle-footer');
     if (btnFooter) {
-        const iconFooter = document.getElementById('theme-icon-footer');
-        if (iconFooter) {
-            iconFooter.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
         const textNode = btnFooter.childNodes[btnFooter.childNodes.length - 1];
         if (textNode && textNode.nodeType === 3) {
             textNode.textContent = theme === 'dark' ? ' Mode clair' : ' Mode sombre';
@@ -33,45 +30,41 @@ function updateThemeIcons(theme) {
     updateThemeIcons(saved);
 })();
 
-// Active nav link
-document.querySelectorAll('.nav-links a').forEach(link => {
-    if (link.getAttribute('href') === window.location.pathname) {
-        link.classList.add('active');
+// Sidebar toggle (mobile)
+const hamburger = document.getElementById('hamburger');
+const sidebar = document.getElementById('sidebar');
+const sidebarClose = document.getElementById('sidebar-close');
+const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+function openSidebar() {
+    sidebar.classList.add('open');
+    sidebarOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+    sidebar.classList.remove('open');
+    sidebarOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+if (hamburger) hamburger.addEventListener('click', openSidebar);
+if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+// Close sidebar on Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
+        closeSidebar();
     }
 });
 
-// Mobile menu toggle
-const hamburger = document.querySelector('.hamburger');
-const navLinks = document.querySelector('.nav-links');
-
-if (hamburger && navLinks) {
-    hamburger.addEventListener('click', function() {
-        navLinks.classList.toggle('open');
-        hamburger.classList.toggle('active');
-    });
-
-    // Close menu when clicking a link
-    navLinks.querySelectorAll('a').forEach(link => {
+// Close sidebar when clicking a nav link (mobile)
+if (sidebar) {
+    sidebar.querySelectorAll('.sidebar-nav a').forEach(link => {
         link.addEventListener('click', () => {
-            navLinks.classList.remove('open');
-            hamburger.classList.remove('active');
+            if (window.innerWidth <= 768) closeSidebar();
         });
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
-            navLinks.classList.remove('open');
-            hamburger.classList.remove('active');
-        }
-    });
-
-    // Close menu on Escape
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && navLinks.classList.contains('open')) {
-            navLinks.classList.remove('open');
-            hamburger.classList.remove('active');
-        }
     });
 }
 
@@ -89,21 +82,24 @@ function togglePassword(id, btn) {
 }
 
 // User menu toggle
-document.querySelector('.user-menu-btn')?.addEventListener('click', function() {
-    this.parentElement.classList.toggle('open');
+document.querySelectorAll('.user-menu-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        this.parentElement.classList.toggle('open');
+    });
 });
 
 // Close user menu on outside click
 document.addEventListener('click', function(e) {
-    const userMenu = document.querySelector('.user-menu');
-    if (userMenu && !userMenu.contains(e.target)) {
-        userMenu.classList.remove('open');
-    }
+    document.querySelectorAll('.user-menu.open').forEach(menu => {
+        if (!menu.contains(e.target)) {
+            menu.classList.remove('open');
+        }
+    });
 });
 
-// Flash messages auto-dismiss with close button
+// Flash messages with close button
 document.querySelectorAll('.flash').forEach(flash => {
-    // Add close button
     const closeBtn = document.createElement('button');
     closeBtn.className = 'flash-close';
     closeBtn.innerHTML = '&times;';
@@ -115,7 +111,6 @@ document.querySelectorAll('.flash').forEach(flash => {
     });
     flash.appendChild(closeBtn);
 
-    // Auto dismiss after 8 seconds
     setTimeout(() => {
         if (flash.parentNode) {
             flash.style.opacity = '0';
@@ -125,7 +120,7 @@ document.querySelectorAll('.flash').forEach(flash => {
     }, 8000);
 });
 
-// ===== PWA Service Worker + Install Banner =====
+// ===== PWA =====
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/static/js/sw.js').catch(() => {});
@@ -137,12 +132,44 @@ if ('serviceWorker' in navigator) {
     const banner = document.getElementById('pwa-install-banner');
     const installBtn = document.getElementById('pwa-install-btn');
     const dismissBtn = document.getElementById('pwa-dismiss-btn');
+    const iosBanner = document.getElementById('ios-install-hint');
+    const iosDismissBtn = document.getElementById('ios-dismiss-btn');
 
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+    if (isStandalone) return;
+
+    // iOS: show manual install hint
+    if (isIOS && iosBanner) {
+        const dismissed = localStorage.getItem('pwa_ios_dismissed');
+        if (!dismissed) {
+            iosBanner.style.display = 'block';
+            document.body.classList.add('pwa-banner-visible');
+        }
+        if (iosDismissBtn) {
+            iosDismissBtn.addEventListener('click', () => {
+                iosBanner.style.display = 'none';
+                document.body.classList.remove('pwa-banner-visible');
+                localStorage.setItem('pwa_ios_dismissed', '1');
+            });
+        }
+        return;
+    }
+
+    // Android / Chrome: use beforeinstallprompt
     if (!banner) return;
 
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
+        const dismissed = localStorage.getItem('pwa_dismissed');
+        if (!dismissed) {
+            setTimeout(() => {
+                banner.style.display = 'block';
+                document.body.classList.add('pwa-banner-visible');
+            }, 5000);
+        }
     });
 
     if (installBtn) {
@@ -151,37 +178,25 @@ if ('serviceWorker' in navigator) {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then(() => {
                 deferredPrompt = null;
-                hideBannerForever();
+                hideBanner();
             });
         });
     }
 
     if (dismissBtn) {
         dismissBtn.addEventListener('click', () => {
-            hideBannerForever();
+            localStorage.setItem('pwa_dismissed', '1');
+            hideBanner();
         });
     }
 
     window.addEventListener('appinstalled', () => {
-        hideBannerForever();
+        hideBanner();
         deferredPrompt = null;
     });
 
-    function showBanner() {
-        banner.style.display = 'block';
-        document.body.classList.add('pwa-banner-visible');
-        setTimeout(() => {
-            banner.style.display = 'none';
-            document.body.classList.remove('pwa-banner-visible');
-        }, 30000);
-    }
-
-    function hideBannerForever() {
+    function hideBanner() {
         banner.style.display = 'none';
         document.body.classList.remove('pwa-banner-visible');
-        clearInterval(window.__pwaLoop);
     }
-
-    window.__pwaLoop = setInterval(showBanner, 120000);
-    showBanner();
 })();
