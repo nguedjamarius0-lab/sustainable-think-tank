@@ -7,6 +7,9 @@ from app.forms import (
     RegisterForm, LoginForm,
     ForgotPasswordForm, ResetPasswordForm, AdminRegisterForm
 )
+import logging
+
+logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint("auth", __name__)
 admin_hidden_bp = Blueprint("admin_hidden", __name__)
@@ -136,7 +139,7 @@ def google_login():
     if not current_app.config.get("GOOGLE_CLIENT_ID") or not current_app.config.get("GOOGLE_CLIENT_SECRET"):
         flash("La connexion Google n'est pas encore configurée.", "error")
         return redirect(url_for("auth.login"))
-    redirect_uri = url_for("auth.google_callback", _external=True)
+    redirect_uri = current_app.config.get("GOOGLE_REDIRECT_URI") or url_for("auth.google_callback", _external=True)
     return google.authorize_redirect(redirect_uri)
 
 
@@ -144,8 +147,11 @@ def google_login():
 def google_callback():
     try:
         token = google.authorize_access_token()
-        user_info = google.parse_id_token(token)
-    except Exception:
+        user_info = token.get("userinfo")
+        if not user_info:
+            user_info = google.parse_id_token(token)
+    except Exception as e:
+        logger.error("Google OAuth error: %s", e)
         flash("Erreur lors de la connexion avec Google.", "error")
         return redirect(url_for("auth.login"))
 
