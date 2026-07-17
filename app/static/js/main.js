@@ -120,6 +120,52 @@ document.querySelectorAll('.flash').forEach(flash => {
     }, 8000);
 });
 
+// ===== ADMIN SIDEBAR TOGGLE (MOBILE) =====
+(function() {
+    const adminToggle = document.getElementById('admin-mobile-toggle');
+    const adminSidebar = document.getElementById('admin-sidebar');
+    const adminOverlay = document.getElementById('admin-sidebar-overlay');
+    const adminClose = document.getElementById('admin-sidebar-close');
+
+    function openAdminSidebar() {
+        if (adminSidebar) adminSidebar.classList.add('open');
+        if (adminOverlay) adminOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeAdminSidebar() {
+        if (adminSidebar) adminSidebar.classList.remove('open');
+        if (adminOverlay) adminOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    if (adminToggle) {
+        adminToggle.addEventListener('click', openAdminSidebar);
+    }
+    if (adminOverlay) {
+        adminOverlay.addEventListener('click', closeAdminSidebar);
+    }
+    if (adminClose) {
+        adminClose.addEventListener('click', closeAdminSidebar);
+    }
+
+    // Close on Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && adminSidebar && adminSidebar.classList.contains('open')) {
+            closeAdminSidebar();
+        }
+    });
+
+    // Close when clicking a nav link (mobile)
+    if (adminSidebar) {
+        adminSidebar.querySelectorAll('.admin-nav a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) closeAdminSidebar();
+            });
+        });
+    }
+})();
+
 // ===== PWA =====
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

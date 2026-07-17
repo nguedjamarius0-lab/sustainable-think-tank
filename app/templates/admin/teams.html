@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Équipes en attente - Admin Tendereo{% endblock %}
 {% block content %}
+<button class="admin-mobile-toggle" id="admin-mobile-toggle" aria-label="Menu admin">
+    <i class="fas fa-bars"></i>
+</button>
 <div class="admin-layout">
     {% include "admin/_sidebar.html" %}
     <div class="admin-main">
@@ -11,8 +14,8 @@
         <div class="admin-card">
             {% if teams %}
             {% for team in teams %}
-            <div style="padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 1rem;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div class="team-card-admin" style="padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 1rem;">
+                <div class="team-card-row">
                     <div>
                         <h3 style="font-size: 1.1rem; font-weight: 700;">{{ team.name }}</h3>
                         <p style="color: var(--primary-teal); font-size: 0.85rem; margin-bottom: 0.5rem;">{{ team.theme }}</p>
@@ -22,7 +25,7 @@
                             &middot; {{ team.members.count() }} membre(s)
                         </p>
                     </div>
-                    <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
+                    <div class="team-card-actions">
                         <a href="{{ url_for('admin.team_detail', team_id=team.id) }}" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
                             <i class="fas fa-info-circle"></i> Détail
                         </a>

@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Dashboard Admin - Tendereo{% endblock %}
 {% block content %}
+<button class="admin-mobile-toggle" id="admin-mobile-toggle" aria-label="Menu admin">
+    <i class="fas fa-bars"></i>
+</button>
 <div class="admin-layout">
     {% include "admin/_sidebar.html" %}
     <main class="admin-main">
@@ -56,7 +59,7 @@
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+        <div class="admin-grid-2col">
             <div class="admin-card">
                 <h3><i class="fas fa-users" style="color: var(--primary-teal);"></i> Derniers inscrits</h3>
                 {% for user in recent_users %}
@@ -87,7 +90,7 @@
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+        <div class="admin-grid-2col">
             <div class="admin-card">
                 <h3><i class="fas fa-users-cog" style="color: #f59e0b;"></i> Équipes à valider</h3>
                 {% for team in pending_teams %}

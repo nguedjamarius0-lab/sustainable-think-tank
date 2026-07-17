@@ -1,6 +1,9 @@
 {% extends "admin/dashboard.html" %}
 {% block title %}Messages - Admin Tendereo{% endblock %}
 {% block content %}
+<button class="admin-mobile-toggle" id="admin-mobile-toggle" aria-label="Menu admin">
+    <i class="fas fa-bars"></i>
+</button>
 <div class="admin-layout">
     {% include "admin/_sidebar.html" %}
     <main class="admin-main">
@@ -9,8 +12,8 @@
         </div>
         <div class="admin-card">
             {% for msg in messages %}
-            <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); {% if not msg.is_read %}background: rgba(14,124,134,0.03);{% endif %}">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div class="msg-item" style="padding: 1rem; border-bottom: 1px solid var(--border-color); {% if not msg.is_read %}background: rgba(14,124,134,0.03);{% endif %}">
+                <div class="msg-content-row">
                     <div>
                         <strong>{{ msg.name }}</strong> <span style="color: var(--text-muted); font-size: 0.85rem;">&lt;{{ msg.email }}&gt;</span>
                         {% if not msg.is_read %}
@@ -19,7 +22,7 @@
                         <h4 style="margin: 0.25rem 0; font-size: 0.95rem;">{{ msg.subject }}</h4>
                         <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">{{ msg.message[:300] }}{% if msg.message|length > 300 %}...{% endif %}</p>
                     </div>
-                    <div style="text-align: right; flex-shrink: 0; margin-left: 1rem;">
+                    <div class="msg-actions">
                         <small style="color: var(--text-muted);">{{ msg.created_at.strftime('%d/%m/%Y %Hh%M') }}</small>
                         <div style="display: flex; gap: 0.25rem; margin-top: 0.25rem;">
                             {% if not msg.is_read %}

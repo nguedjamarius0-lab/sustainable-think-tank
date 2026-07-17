@@ -1,6 +1,9 @@
 {% extends "admin/dashboard.html" %}
 {% block title %}Partenaires - Admin Tendereo{% endblock %}
 {% block content %}
+<button class="admin-mobile-toggle" id="admin-mobile-toggle" aria-label="Menu admin">
+    <i class="fas fa-bars"></i>
+</button>
 <div class="admin-layout">
     {% include "admin/_sidebar.html" %}
     <main class="admin-main">
