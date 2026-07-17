@@ -17,8 +17,6 @@ admin_hidden_bp = Blueprint("admin_hidden", __name__)
 oauth = OAuth()
 google = oauth.register(
     name="google",
-    client_id=lambda: current_app.config.get("GOOGLE_CLIENT_ID"),
-    client_secret=lambda: current_app.config.get("GOOGLE_CLIENT_SECRET"),
     server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
     client_kwargs={"scope": "openid email profile"},
 )
