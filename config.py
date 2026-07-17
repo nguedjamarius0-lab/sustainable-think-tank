@@ -45,8 +45,7 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    # Use 1 worker in production to keep SimpleCache/rate-limit consistent
-    # If scaling, switch to Redis for cache and rate-limit storage
+    PREFERRED_URL_SCHEME = "https"
 
 
 class TestingConfig(Config):

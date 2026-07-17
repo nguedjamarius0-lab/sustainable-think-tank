@@ -8,6 +8,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_caching import Cache
 from flask_wtf.csrf import CSRFProtect
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -30,6 +31,8 @@ def create_app(config_name=None):
 
     from config import config
     app.config.from_object(config[config_name])
+
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
     os.makedirs(app.config.get("UPLOAD_FOLDER", "app/static/uploads"), exist_ok=True)
 
