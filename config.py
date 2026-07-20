@@ -9,7 +9,7 @@ class Config:
     BASEDIR = os.path.dirname(os.path.abspath(__file__))
     _db_url = os.environ.get("DATABASE_URL", "")
     if not _db_url:
-        _db_url = "sqlite:///" + os.path.join(BASEDIR, "instance", "tendereo.db")
+        _db_url = "sqlite:///" + os.path.join(BASEDIR, "instance", "by_nguedjamarius.db")
     elif _db_url.startswith("postgres://"):
         _db_url = _db_url.replace("postgres://", "postgresql://", 1)
     SQLALCHEMY_DATABASE_URI = _db_url

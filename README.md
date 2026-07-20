@@ -1,6 +1,6 @@
-# Tendereo Sustainability Institute
+# by_nguedjamarius
 
-Site web du Tendereo Sustainability Institute — think tank indépendant dédié à la recherche et à l'innovation pour un développement durable et inclusif en Afrique.
+Site web du by_nguedjamarius — think tank indépendant dédié à la recherche et à l'innovation pour un développement durable et inclusif en Afrique.
 
 ## Prérequis
 
@@ -93,10 +93,10 @@ docker-compose up -d
 python run.py                    # Serveur dev
 flask db migrate -m "message"    # Générer une migration
 flask db upgrade                 # Appliquer les migrations
-python seed.py                   # Seed admin (admin@tendereo.org)
+python seed.py                   # Seed admin (admin@by-nguedjamarius.com)
 pytest                           # Lancer les tests
 ```
 
 ## Licence
 
-© 2026 Tendereo Sustainability Institute. Tous droits réservés.
+© 2026 by_nguedjamarius. Tous droits réservés.

@@ -10,10 +10,10 @@ with app.app_context():
     db.create_all()
 
     if not User.query.first():
-        admin = User(email="admin@tendereo.org", name="Admin Tendereo", role="admin", is_verified=True)
+        admin = User(email="admin@by-nguedjamarius.com", name="Admin by_nguedjamarius", role="admin", is_verified=True)
         admin.set_password("admin123")
         db.session.add(admin)
         db.session.commit()
-        print("Admin account created: admin@tendereo.org / admin123")
+        print("Admin account created: admin@by-nguedjamarius.com / admin123")
     else:
         print("Admin already exists.")

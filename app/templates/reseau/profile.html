@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}@{{ user.name|lower|replace(' ', '_') }} - Réseau Tendereo{% endblock %}
+{% block title %}@{{ user.name|lower|replace(' ', '_') }} - Réseau by_nguedjamarius{% endblock %}
 {% block navbar %}{% endblock %}
 {% block footer %}{% endblock %}
 {% block extra_css %}
@@ -183,14 +183,14 @@ body { background: #fff; }
     </div>
 
     <div class="prof-bio">
-        {% if user.role == 'admin' %}Administrateur{% elif user.role == 'editor' %}Éditeur{% else %}Membre{% endif %} — Tendereo Sustainability Institute
+        {% if user.role == 'admin' %}Administrateur{% elif user.role == 'editor' %}Éditeur{% else %}Membre{% endif %} — by_nguedjamarius
     </div>
 
     <div class="prof-actions">
         {% if current_user.is_authenticated and current_user.id != user.id %}
         <button class="prof-btn prof-btn-follow"><i class="fas fa-user-plus"></i> Suivre</button>
         {% endif %}
-        <button class="prof-btn prof-btn-studio"><i class="fas fa-chart-bar"></i> Tendereo Studio</button>
+        <button class="prof-btn prof-btn-studio"><i class="fas fa-chart-bar"></i> by_nguedjamarius Studio</button>
         {% if current_user.is_authenticated and current_user.id != user.id %}
         <button class="prof-btn prof-btn-sub"><i class="fas fa-bell"></i> Abonnement</button>
         {% endif %}

@@ -1,7 +1,7 @@
 def test_index(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert b"Tendereo" in response.data
+    assert b"by_nguedjamarius" in response.data
 
 
 def test_publications(client):

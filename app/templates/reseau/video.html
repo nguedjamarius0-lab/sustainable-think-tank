@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ video.title }} - Réseau Tendereo{% endblock %}
+{% block title %}{{ video.title }} - Réseau by_nguedjamarius{% endblock %}
 {% block navbar %}{% endblock %}
 {% block footer %}{% endblock %}
 {% block extra_css %}
@@ -169,7 +169,7 @@ body { overflow: hidden; background: #000; }
         <div class="vd-info">
             <div class="author">
                 <div class="author-av">{% if video.creator %}{{ video.creator.name[0]|upper }}{% else %}T{% endif %}</div>
-                <span class="author-name">@{{ video.creator.name|lower|replace(' ', '_') if video.creator else 'tendereo' }}</span>
+                <span class="author-name">@{{ video.creator.name|lower|replace(' ', '_') if video.creator else 'by_nguedjamarius' }}</span>
             </div>
             {% if video.description %}<div class="desc">{{ video.description }}</div>{% endif %}
             <div class="music"><i class="fas fa-music"></i> {{ video.title }}</div>

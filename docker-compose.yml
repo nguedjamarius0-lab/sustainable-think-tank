@@ -14,7 +14,7 @@ services:
       - MAIL_USE_TLS=${MAIL_USE_TLS:-True}
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER:-noreply@tendereo.org}
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER:-noreply@by-nguedjamarius.com}
       - DONATION_URL=${DONATION_URL:-#}
       - ADMIN_REG_CODE=${ADMIN_REG_CODE:-change-this-in-production}
     depends_on:

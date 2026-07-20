@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tendereo-v1';
+const CACHE_NAME = 'by_nguedjamarius-v1';
 const PRECACHE_URLS = [
     '/',
     '/static/css/style.css',

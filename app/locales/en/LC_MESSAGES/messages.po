@@ -1,10 +1,10 @@
-# English translations for Tendereo Sustainability Institute
-# Copyright (C) 2026 Tendereo Sustainability Institute
-# This file is distributed under the same license as the Tendereo project.
+# English translations for by_nguedjamarius
+# Copyright (C) 2026 by_nguedjamarius
+# This file is distributed under the same license as the by_nguedjamarius project.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Tendereo 1.0\n"
+"Project-Id-Version: by_nguedjamarius 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-01 00:00+0000\n"
 "PO-Revision-Date: 2026-01-01 00:00+0000\n"
@@ -45,8 +45,8 @@ msgid "Dashboard"
 msgstr "Dashboard"
 
 # Home
-msgid "Tendereo Sustainability Institute"
-msgstr "Tendereo Sustainability Institute"
+msgid "by_nguedjamarius"
+msgstr "by_nguedjamarius"
 
 msgid "Inform, Influence, Impact — For a sustainable future in Africa"
 msgstr "Inform, Influence, Impact — For a sustainable future in Africa"
@@ -112,8 +112,8 @@ msgstr "Login"
 msgid "Create an account"
 msgstr "Create an account"
 
-msgid "Join the Tendereo community"
-msgstr "Join the Tendereo community"
+msgid "Join the by_nguedjamarius community"
+msgstr "Join the by_nguedjamarius community"
 
 msgid "Full name"
 msgstr "Full name"
